@@ -1,0 +1,65 @@
+#!/usr/bin/bash
+
+
+
+#per far trovare module alla VM
+export MODULEPATH=$MODULEPATH:/afs/enea.it/bol/user/disidoro/MyModules/
+
+module() { eval `/usr/bin/modulecmd sh $*`; }
+
+
+export module="gfortran_cr6"
+module load $module
+
+export queue_name_scalar=forair_h4
+export queue_name_parallel=forair_48h24
+export nprocs_wrf=336 
+export nprocs_metgrid=48 
+export cpu_omp=2
+
+export dir_root=/gporq3/minni/minniusers/disidoro/ESWATINI
+
+export dir_tmp=$dir_root/scratch
+export dir_log=$dir_root/scratch/log
+
+
+export dir_master=$dir_root/ESWATINI_NWP
+export dir_script=$dir_master/scripts
+export dir_namelist=$dir_master/namelists
+export dir_exe=$dir_master/bin
+
+export dir_input=$dir_root/INPUT
+export dir_geogrid_files=$dir_input/geogrid_files
+export dir_metgrid_files=$dir_tmp
+export dir_input_meteo=$dir_input/ncep
+export dir_input_sst=$dir_input/sst
+export dir_wrf_static_data=$dir_root/wrf_static_data
+export dir_wrf_run_data=$dir_root/wrf_run_data
+
+
+export dir_archive=$dir_root/OUT_ARCHIVE
+
+
+
+export project_name="ESWATINI_NWP"
+
+export gfs_res=0p25
+export gfs_reference_time=00
+
+export start_hour_forecast=00
+export end_hour_forecast=00
+
+# number of grids
+export ngrid=3
+
+# number of forecast days
+export ndays=3
+
+
+# starting time of meteo forecast needed to check if all met_em files
+# were produced. If met_em frequency will be changed in the future
+#export starting_time_meteo=18 
+
+# time frequency (hours) of met_em WRF files (needed to check met_em
+# production in check_premet_wrf.bsh)
+export met_em_freq=3
