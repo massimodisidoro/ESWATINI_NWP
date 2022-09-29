@@ -47,8 +47,8 @@ URL2="&lev_0-0.1_m_below_ground=on&lev_0.1-0.4_m_below_ground=on&lev_0.4-1_m_bel
 
     #file_ncep=${file_prefix_ncep}.f${hhh}
     URL=${URL1}${hhh}${URL2}
-    curl  $URL -o $file_ncep
-    echo " curl  $URL -o $file_ncep"
+    curl -k  $URL -o $file_ncep
+    echo " curl -k  $URL -o $file_ncep"
     #file_ncep=${file_prefix_ncep}.f${hhh}
     #echo "wget -P $dir_gfs -c --no-check-certificate ${path_gfs_ncep}/gfs.${dategfs}/$gfs_reference_time/$file_ncep"
     #wget -P $dir_gfs -c --no-check-certificate ${path_gfs_ncep}/gfs.${dategfs}/$gfs_reference_time/atmos/$file_ncep
