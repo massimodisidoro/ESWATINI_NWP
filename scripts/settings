@@ -5,6 +5,8 @@
 #per far trovare module alla VM
 export MODULEPATH=$MODULEPATH:/afs/enea.it/bol/user/disidoro/MyModules/
 
+export python=/gporq3/minni/minniusers/disidoro/anaconda3/envs/wrf-python/bin/python
+
 module() { eval `/usr/bin/modulecmd sh $*`; }
 
 
@@ -27,11 +29,12 @@ export dir_master=$dir_root/ESWATINI_NWP
 export dir_script=$dir_master/scripts
 export dir_namelist=$dir_master/namelists
 export dir_exe=$dir_master/bin
+export dir_post=$dir_master/postprocessing
 
 export dir_input=$dir_root/INPUT
 export dir_geogrid_files=$dir_input/geogrid_files
 export dir_metgrid_files=$dir_tmp
-export dir_input_meteo=$dir_input/ncep
+export dir_input_meteo=$dir_input/gfs
 export dir_input_sst=$dir_input/sst
 export dir_wrf_static_data=$dir_root/wrf_static_data
 export dir_wrf_run_data=$dir_root/wrf_run_data
@@ -44,16 +47,13 @@ export dir_archive=$dir_root/OUT_ARCHIVE
 export project_name="ESWATINI_NWP"
 
 export gfs_res=0p25
-export gfs_reference_time=00
+export gfs_reference_time=00 # change to 18 if starting at 18Z day-1
 
-export start_hour_forecast=00
+export start_hour_forecast=00 # change to 18 if starting at 18Z day-1
 export end_hour_forecast=00
 
-# number of grids
-export ngrid=3
-
 # number of forecast days
-export ndays=3
+export ndays=3 # 3.25 in case starting at 18Z dai-1 (78h forecast)
 
 
 # starting time of meteo forecast needed to check if all met_em files
