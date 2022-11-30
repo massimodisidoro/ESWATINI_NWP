@@ -34,6 +34,8 @@ cp $dir_namelist/namelist.input.tpl $dir_tmp
 
 cd $dir_tmp
 
+#according to README.physics_files, link the necessary files 
+#needed by the physics configuragion chosen.
 ln -sf $dir_exe/wrf.exe .
 ln -sf $dir_wrf_run_data/aerosol* .
 ln -sf $dir_wrf_run_data/bulk* .
@@ -52,7 +54,7 @@ ln -sf $dir_wrf_run_data/VEGPARM.TBL .
 ln -sf $dir_wrf_run_data/RRTM* .
 ln -sf $dir_wrf_run_data/tr* .
 ln -sf $dir_wrf_run_data/ozone* .
-ln -sf $dir_wrf_run_data/p3_lookup_table_1.dat .
+ln -sf $dir_wrf_run_data/p3_lookup_Table* .
 ln -sf $dir_wrf_run_data/README.namelist .
 
 

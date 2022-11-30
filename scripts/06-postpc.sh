@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source settings
+set -x
 
 date_forecast=$1
 
@@ -23,25 +24,42 @@ filewrf2="$dir_tmp/wrfout_d02_${year}-${month}-${day}_${hour}:00:00"
 
 end_step=$(( ndays * 24 ))
 
-post_out=$dir_tmp
-# post d01
-#$python $dir_post/plot_figures.py $filewrf1 --start 1 --end $end_step --out $post_out
-# post d02
-#$python $dir_post/plot_figures.py $filewrf1 --start 1 --end $end_step --out $post_out
-$python $dir_post/plot_figures.py $filewrf2 --start 1 --end 48 --out $post_out
+# post 1km domain
+domain="d02"
+post_out=$dir_web/$domain
+mkdir -p $post_out
+$python $dir_post/plot_skewt_con_metpy.py $filewrf2 --start 6 --end $end_step --deltastep 6 --lat -26.315 --lon 31.133 --profilename 'Mbabane' --out $post_out
+$python $dir_post/plot_figures.py $filewrf2 --start 6 --end $end_step --out $post_out
 
-# archive
-fig_archive=$dir_archive/$date_forecast/figures
-mkdir -p $fig_archive
-mv $dir_tmp/*init_${date_forecast}_*.png  $fig_archive
-
-#### to local website 
-cd $fig_archive
-for i in *.png; do
-  pre=`echo $i | awk -F'_init' '{print $1}'`
-  suff="`echo $i | rev |cut -d+ -f 1 |rev |cut -d. -f 1`"
-  xx=`printf '%02d\n' ${suff}`
-  new="${pre}+${xx}.png"
-  cp $i /afs/enea.it/bol/user/disidoro/public_html/enwp/d2/$new
+post_out=$dir_web/$domain
+fig_meteo_archive=$dir_archive/$date_forecast/figures/$domain
+mkdir -p $fig_meteo_archive
+echo "copying figures to archive dir $fig_meteo_archive"
+cd $post_out
+for i in ${domain}*.png; do
+  step=`echo $i |cut -d+ -f2 |cut -d. -f1`
+  step=`printf '%02d\n' ${step}`
+  field=`echo $i |cut -d+ -f1`
+  new="${field}_${date_forecast}+${step}.png"
+  cp $i $fig_meteo_archive/$new
 done
 
+# post 5km domain
+domain="d01"
+post_out=$dir_web/$domain
+mkdir -p $post_out
+$python $dir_post/plot_skewt_con_metpy.py $filewrf1 --start 6 --end $end_step --deltastep 6 --lat -26.315 --lon 31.133 --profilename 'Mbabane' --out $post_out
+$python $dir_post/plot_figures.py $filewrf1 --start 6 --end $end_step --out $post_out
+
+post_out=$dir_web/$domain
+fig_meteo_archive=$dir_archive/$date_forecast/figures/$domain
+mkdir -p $fig_meteo_archive
+echo "copying figures to archive dir $fig_meteo_archive"
+cd $post_out
+for i in ${domain}*.png; do
+  step=`echo $i |cut -d+ -f2 |cut -d. -f1`
+  step=`printf '%02d\n' ${step}`
+  field=`echo $i |cut -d+ -f1`
+  new="${field}_${date_forecast}+${step}.png"
+  cp $i $fig_meteo_archive/$new
+done

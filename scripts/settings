@@ -41,12 +41,13 @@ export dir_wrf_run_data=$dir_root/wrf_run_data
 
 
 export dir_archive=$dir_root/OUT_ARCHIVE
+export dir_web=/afs/enea.it/bol/user/disidoro/public_html/enwp
 
 
 
 export project_name="ESWATINI_NWP"
 
-export gfs_res=0p25
+export gfs_res=0p50 #0p50 0p25
 export gfs_reference_time=00 # change to 18 if starting at 18Z day-1
 
 export start_hour_forecast=00 # change to 18 if starting at 18Z day-1

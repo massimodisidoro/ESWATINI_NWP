@@ -63,12 +63,10 @@ sed "s/@@end_hour@@/${end_hour}/g"  > namelist.wps
 #date=`date -d "$date + 1 day" +%Y-%m-%d`
 #done
 
-./link_grib.csh $dir_grib/gfs.
+datesst=`date -d "$date_gfs -1 day" +%Y%m%d`
+ln -fs $dir_input_sst/${datesst}/* $dir_grib/
 
+./link_grib.csh $dir_grib/
 
-echo $LD_LIBRARY_PATH
 
 ./ungrib.exe  &> $dir_log/log_02_ungrib_${date_forecast}-${end_date}.log
-
-
-
