@@ -19,29 +19,30 @@ export nprocs_wrf=336
 export nprocs_metgrid=48 
 export cpu_omp=2
 
-export dir_root=/gporq3/minni/minniusers/disidoro/ESWATINI
+export dir_root="/gporq3/minni/minniusers/disidoro/ESWATINI"
 
-export dir_tmp=$dir_root/scratch
-export dir_log=$dir_root/scratch/log
-
-
-export dir_master=$dir_root/ESWATINI_NWP
-export dir_script=$dir_master/scripts
-export dir_namelist=$dir_master/namelists
-export dir_exe=$dir_master/bin
-export dir_post=$dir_master/postprocessing
-
-export dir_input=$dir_root/INPUT
-export dir_geogrid_files=$dir_input/geogrid_files
-export dir_metgrid_files=$dir_tmp
-export dir_input_meteo=$dir_input/gfs
-export dir_input_sst=$dir_input/sst
-export dir_wrf_static_data=$dir_root/wrf_static_data
-export dir_wrf_run_data=$dir_root/wrf_run_data
+export dir_tmp="$dir_root/scratch"
+export dir_log="$dir_root/scratch/log"
 
 
-export dir_archive=$dir_root/OUT_ARCHIVE
-export dir_web=/afs/enea.it/bol/user/disidoro/public_html/enwp
+export dir_master="$dir_root/ESWATINI_NWP"
+export dir_wrf_code="$dir_root/wrf_code/WRF-4.2.2"
+export dir_script="$dir_master/scripts"
+export dir_namelist="$dir_master/namelists"
+export dir_exe="$dir_master/bin"
+export dir_post="$dir_master/postprocessing"
+
+export dir_input="$dir_root/INPUT"
+export dir_geogrid_files="$dir_input/geogrid_files"
+export dir_metgrid_files="$dir_tmp"
+export dir_input_meteo="$dir_input/gfs"
+export dir_input_sst="$dir_input/sst"
+export dir_wrf_static_data="$dir_root/wrf_static_data"
+export dir_wrf_lookup_tables="$dir_wrf_code/run"
+
+
+export dir_archive="$dir_root/OUT_ARCHIVE"
+export dir_web="/afs/enea.it/bol/user/disidoro/public/enwp"
 
 
 

@@ -31,31 +31,45 @@ hh2=$end_hour_forecast
 
 
 cp $dir_namelist/namelist.input.tpl $dir_tmp
+cp $dir_namelist/tslist $dir_tmp
 
 cd $dir_tmp
 
+#link executable and README.namelist
+ln -sf $dir_exe/wrf.exe 
+ln -sf $dir_wrf_lookup_tables/README.namelist 
 #according to README.physics_files, link the necessary files 
 #needed by the physics configuragion chosen.
-ln -sf $dir_exe/wrf.exe .
-ln -sf $dir_wrf_run_data/aerosol* .
-ln -sf $dir_wrf_run_data/bulk* .
-ln -sf $dir_wrf_run_data/C* .
-ln -sf $dir_wrf_run_data/*.asc .
-ln -sf $dir_wrf_run_data/kernels.asc_s_0_03_0_9 .
-ln -sf $dir_wrf_run_data/ETAMPNEW_DATA .
-ln -sf $dir_wrf_run_data/ETAMPNEW_DATA.expanded_rain .
-ln -sf $dir_wrf_run_data/grib* .
-ln -sf $dir_wrf_run_data/GENPARM.TBL .
-ln -sf $dir_wrf_run_data/LANDUSE.TBL .
-ln -sf $dir_wrf_run_data/MPTABLE.TBL .
-ln -sf $dir_wrf_run_data/SOILPARM.TBL .
-ln -sf $dir_wrf_run_data/URBPARM.TBL .
-ln -sf $dir_wrf_run_data/VEGPARM.TBL .
-ln -sf $dir_wrf_run_data/RRTM* .
-ln -sf $dir_wrf_run_data/tr* .
-ln -sf $dir_wrf_run_data/ozone* .
-ln -sf $dir_wrf_run_data/p3_lookup_Table* .
-ln -sf $dir_wrf_run_data/README.namelist .
+#needed for NOAH soil (option 2)
+ln -sf $dir_wrf_lookup_tables/LANDUSE.TBL 
+ln -sf $dir_wrf_lookup_tables/GENPARM.TBL 
+ln -sf $dir_wrf_lookup_tables/SOILPARM.TBL 
+ln -sf $dir_wrf_lookup_tables/VEGPARM.TBL 
+#needed for radiation option 4 (RRTMG)
+ln -sf $dir_wrf_lookup_tables/RRTMG_LW_DATA
+ln -sf $dir_wrf_lookup_tables/RRTMG_LW_DATA_DBL
+ln -sf $dir_wrf_lookup_tables/RRTMG_SW_DATA
+ln -sf $dir_wrf_lookup_tables/RRTMG_SW_DATA_DBL
+ln -sf $dir_wrf_lookup_tables/aerosol.formatted
+ln -sf $dir_wrf_lookup_tables/aerosol_lat.formatted
+ln -sf $dir_wrf_lookup_tables/aerosol_lon.formatted
+ln -sf $dir_wrf_lookup_tables/aerosol_plev.formatted
+ln -sf $dir_wrf_lookup_tables/ozone.formatted
+ln -sf $dir_wrf_lookup_tables/ozone_lat.formatted
+ln -sf $dir_wrf_lookup_tables/ozone_plev.formatted
+
+
+#ln -sf $dir_wrf_lookup_tables/grib* .
+#ln -sf $dir_wrf_lookup_tables/bulk* .
+#ln -sf $dir_wrf_lookup_tables/C* .
+#ln -sf $dir_wrf_lookup_tables/*.asc .
+#ln -sf $dir_wrf_lookup_tables/kernels.asc_s_0_03_0_9 .
+#ln -sf $dir_wrf_lookup_tables/ETAMPNEW_DATA .
+#ln -sf $dir_wrf_lookup_tables/ETAMPNEW_DATA.expanded_rain .
+#ln -sf $dir_wrf_lookup_tables/MPTABLE.TBL .
+#ln -sf $dir_wrf_lookup_tables/URBPARM.TBL .
+#ln -sf $dir_wrf_lookup_tables/tr* .
+#ln -sf $dir_wrf_lookup_tables/p3_lookupTable* .
 
 
 cat namelist.input.tpl | \
