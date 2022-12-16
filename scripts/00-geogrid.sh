@@ -13,7 +13,8 @@ if [[ -z $date_forecast ]];then
   exit
 fi
 
-run_hours=$(( ndays*24 ))
+#run_hours=$(( ndays*24 ))
+run_hours=$forecast_length
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
 start_hour=$start_hour_forecast

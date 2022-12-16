@@ -9,13 +9,15 @@ if [[ -z $date_forecast ]];then
   echo " date_forecast not provided, starting with $date_forecast"
 fi
 
+logdir=$dir_log/$date_forecast
 
-mkdir -p $dir_log
+mkdir -p $logdir
 mkdir -p $dir_tmp
 
-run_hours=$(( ndays*24 ))
+run_hours=$forecast_length
+ts_buffer=`echo "scale=0; 6 * 60 * 3600 / $wrf_timestep"|bc` # every 6 hours updates timeseries
+frames_wrfout=`echo "scale=0; $run_hours +1"|bc`
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
-
 
 #formate dates for wrf WRF namelist
 yyyy1=`echo $date_forecast |cut -c 1-4`
@@ -57,6 +59,19 @@ ln -sf $dir_wrf_lookup_tables/aerosol_plev.formatted
 ln -sf $dir_wrf_lookup_tables/ozone.formatted
 ln -sf $dir_wrf_lookup_tables/ozone_lat.formatted
 ln -sf $dir_wrf_lookup_tables/ozone_plev.formatted
+ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio
+
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.A1B
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.A2
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.RCP4.5
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.RCP6
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.RCP8.5
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP119
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP126
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP245
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP370
+#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP585
+
 
 
 #ln -sf $dir_wrf_lookup_tables/grib* .
@@ -71,8 +86,10 @@ ln -sf $dir_wrf_lookup_tables/ozone_plev.formatted
 #ln -sf $dir_wrf_lookup_tables/tr* .
 #ln -sf $dir_wrf_lookup_tables/p3_lookupTable* .
 
-
 cat namelist.input.tpl | \
+sed "s/@@ts_buf_size@@/${ts_buffer}/g" | \
+sed "s/@@wrf_timestep@@/${wrf_timestep}/g" | \
+sed "s/@@frames_wrfout@@/${frames_wrfout}/g" | \
 sed "s/yyyy1/${yyyy1}/g" | \
 sed "s/mm1/${mm1}/g" | \
 sed "s/dd1/${dd1}/g" | \
@@ -100,8 +117,8 @@ echo 'done' >> $script_wrf
 echo 'done' >> $script_wrf
 echo 'mpirun --bind-to socket --mca plm_rsh_agent "blaunch.sh" -n $N_procs --hostfile ./hosts.${LSB_JOBID}_$date $exe' >> $script_wrf
 echo 'sleep 5' >> $script_wrf
-echo "mv rsl* $dir_log"  >>  $script_wrf
-echo "cp namelist.input $dir_log/namelist.input_$date_forecast"  >>  $script_wrf
+echo "mv rsl* $logdir"  >>  $script_wrf
+echo "cp namelist.input $logdir/namelist.input_$date_forecast"  >>  $script_wrf
 
 chmod 744 $script_wrf
-bsub  -n $nprocs_wrf -q $queue_name_parallel -o $dir_log/wrf_${date_forecast}.out -e $dir_log/wrf_${date_forecast}.err $script_wrf $cpu_omp $log
+bsub  -n $nprocs_wrf -q $queue_name_parallel -o $logdir/wrf_${date_forecast}.out -e $logdir/wrf_${date_forecast}.err $script_wrf $cpu_omp $log

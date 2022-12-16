@@ -18,7 +18,7 @@ fi
 date_gfs=`date -d "$date_forecast " +%Y%m%d`
 
 
-run_hours=$(( ndays*24 ))
+run_hours=$forecast_length
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
 start_hour=$start_hour_forecast
@@ -36,7 +36,8 @@ dd=`echo $end_date |cut -c 7-8`
 new_fmt_end_date="${yyyy}-${mm}-${dd}"
 
 
-mkdir -p $dir_log
+logdir=$dir_log/$date_forecast
+mkdir -p $logdir
 mkdir -p $dir_tmp
 dir_grib=${dir_input_meteo}/${date_gfs}_${gfs_reference_time}/
 
@@ -69,4 +70,4 @@ ln -fs $dir_input_sst/${datesst}/* $dir_grib/
 ./link_grib.csh $dir_grib/
 
 
-./ungrib.exe  &> $dir_log/log_02_ungrib_${date_forecast}-${end_date}.log
+./ungrib.exe  &> $logdir/log_02_ungrib_${date_forecast}-${end_date}.log

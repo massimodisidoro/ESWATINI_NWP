@@ -55,7 +55,8 @@ export start_hour_forecast=00 # change to 18 if starting at 18Z day-1
 export end_hour_forecast=00
 
 # number of forecast days
-export ndays=3 # 3.25 in case starting at 18Z dai-1 (78h forecast)
+export forecast_length=72  #forecast length in hours (at least 24h!)
+export wrf_timestep=30 #model timestep in seconds
 
 
 # starting time of meteo forecast needed to check if all met_em files

@@ -12,7 +12,7 @@ if [[ -z $date_forecast ]];then
 fi
 
 
-run_hours=$(( ndays*24 ))
+run_hours=$forecast_length
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
 start_hour=$start_hour_forecast
@@ -31,8 +31,8 @@ dd=`echo $end_date |cut -c 7-8`
 new_fmt_end_date="${yyyy}-${mm}-${dd}"
 
 
-
-mkdir -p $dir_log
+logdir=$dir_log/$date_forecast
+mkdir -p $logdir
 mkdir -p $dir_tmp
 
 cp $dir_namelist/namelist.wps.tpl $dir_tmp
@@ -56,7 +56,7 @@ sed "s!@@geogrid_output@@!${dir_geogrid_files}!g" | \
 sed "s!@@metgrid_table_path@@!$metgrid_table_path!g" | \
 sed "s!@@metgrid_output@@!$dir_metgrid_files!g" > namelist.wps
 
-./metgrid.exe &> $dir_log/log_03_metgrid_${date_forecast}.log
+./metgrid.exe &> $logdir/log_03_metgrid_${date_forecast}.log
 
 #script_metgrid="metgrid.sh"
 #echo "#!/usr/bin/bash -i" > $script_metgrid
@@ -75,4 +75,4 @@ sed "s!@@metgrid_output@@!$dir_metgrid_files!g" > namelist.wps
 #echo "mpirun --mca orte_rsh_agent blaunch.sh -n "'$N_procs'" --hostfile /tmp/hosts."'$LSB_JOBID'" $dir_tmp/metgrid.exe" >> $script_metgrid
 #
 #chmod +x $script_metgrid
-#bsub -K -R "span[hosts=1]" -q $queue_name_parallel -o $dir_log/metgrid_${date_forecast}.out -e $dir_log/metgrid_${date_forecast}.err -n $nprocs_metgrid $script_metgrid
+#bsub -K -R "span[hosts=1]" -q $queue_name_parallel -o $logdir/metgrid_${date_forecast}.out -e $logdir/metgrid_${date_forecast}.err -n $nprocs_metgrid $script_metgrid

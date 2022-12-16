@@ -77,8 +77,8 @@ file_prefix_ncep="gfs.t${gfs_reference_time}z.pgrb2.${gfs_res}"
 max_attempt=5
 
 
-echo $ndays
-hours=$(( ndays*24 + 3 )) # gfs forecast hours to be downloaded 
+echo $forecast_length
+hours=$(( forecast_length + 3 )) # gfs forecast hours to be downloaded 
 nfiles=$(( hours/3 +1 )) # number of expected 3-hourly files
 
 #Download and Check if download complete, otherwise retry:

@@ -8,9 +8,11 @@ source /etc/eswatini/settings
 
 data=`date +%Y%m%d`
 
+logdir=$dir_log/$data
+mkdir -p $logdir
+
 cd $dir_script  # senno' non funzione source ./env_vars dentro agli sctipts
-mkdir -p $dir_log
 
 
-bsub -q $queue_name_scalar -o $dir_log/log_04-real_${data}.out -e $dir_log/log_04-real_${data}.err ./04-real.sh $data
+bsub -q $queue_name_scalar -o $logdir/log_04-real_${data}.out -e $logdir/log_04-real_${data}.err ./04-real.sh $data
 

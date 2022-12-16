@@ -9,11 +9,15 @@ if [[ -z $date_forecast ]];then
   echo " date_forecast not provided, starting with $date_forecast"
 fi
 
+logdir=$dir_log/$date_forecast
 
-mkdir -p $dir_log
+mkdir -p $logdir
 mkdir -p $dir_tmp
 
-run_hours=$(( ndays*24 ))
+run_hours=$forecast_length
+ts_buffer=`echo "scale=0; 6 * 60 * 3600 / $wrf_timestep"|bc` # every 6 hours updates timeseries
+frames_wrfout=`echo "scale=0; $run_hours +1"|bc`
+
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
 
@@ -47,6 +51,9 @@ ln -sf $dir_geogrid_files/* .
 
 
 cat namelist.input.tpl | \
+sed "s/@@ts_buf_size@@/${ts_buffer}/g" | \
+sed "s/@@wrf_timestep@@/${wrf_timestep}/g" | \
+sed "s/@@frames_wrfout@@/${frames_wrfout}/g" | \
 sed "s/yyyy1/${yyyy1}/g" | \
 sed "s/mm1/${mm1}/g" | \
 sed "s/dd1/${dd1}/g" | \
@@ -71,7 +78,7 @@ echo "sleep 3" >>$script_real
    #loop=`date -d "$loop +1 day" +%Y%m%d`
 #done
 
-./real.exe &> $dir_log/log_04_real_${date_forecast}.log
+./real.exe &> $logdir/log_04_real_${date_forecast}.log
 
 #echo 'NCPUS=1 ; export NCPUS' >> $script_real
 #echo 'OMP_NUM_THREADS=1 ; export OMP_NUM_THREADS' >> $script_real
@@ -80,10 +87,10 @@ echo "sleep 3" >>$script_real
 #echo 'N_procs=`cat $LSB_DJOB_HOSTFILE | wc -l`' >> $script_real
 #echo 'mpirun --bind-to socket --mca plm_rsh_agent "blaunch.sh" -n $N_procs --hostfile $HOSTFILE ./real.exe' >> $script_real
 #echo 'sleep 5' >> $script_real
-#echo "mv rsl* $dir_log/real_${date_forecast}.log" >> $script_real
+#echo "mv rsl* $logdir/real_${date_forecast}.log" >> $script_real
 #echo "rm met_em*.nc" >> $script_real
-#echo "cp namelist.input $dir_log/namelist.input_real_$date_forecast" >> $script_real
+#echo "cp namelist.input $logdir/namelist.input_real_$date_forecast" >> $script_real
 #
 ##lancio real
-#bsub -We $We_real -n  $nprocs_real -q $queue_name_parallel -o $dir_log/real_${date_forecast}.out -e $dir_log/real_${date_forecast}.err  $script_real
+#bsub -We $We_real -n  $nprocs_real -q $queue_name_parallel -o $logdir/real_${date_forecast}.out -e $logdir/real_${date_forecast}.err  $script_real
 #
