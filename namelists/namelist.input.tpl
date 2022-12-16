@@ -14,7 +14,7 @@
  interval_seconds                     = 10800,
  input_from_file                     = .true., .true.,
  history_interval                    = 60,  60,
- frames_per_outfile                  = 73, 73,
+ frames_per_outfile                  = @@frames_wrfout@@, @@frames_wrfout@@,
  restart                             = .false.,
  restart_interval                    = 7200,
  write_hist_at_0h_rst                = .false.,
@@ -29,14 +29,14 @@
  auxinput11_end_h                    = 99999, 99999,
  /
 
- &domains
- time_step                = 30,
- time_step_fract_num      = 0,
- time_step_fract_den      = 1,
- use_adaptive_time_step   = .false.
- step_to_output_time      = .true.
- max_dom                  = 2,
- s_we                     = 1,        1,
+&domains
+time_step                = @@wrf_timestep@@,
+time_step_fract_num      = 0,
+time_step_fract_den      = 1,
+use_adaptive_time_step   = .false.
+step_to_output_time      = .true.
+max_dom                  = 2,
+s_we                     = 1,        1,
 e_we                     = 272,      356,
 s_sn                     = 1,        1,
 e_sn                     = 240,      356,
@@ -53,6 +53,10 @@ parent_grid_ratio        = 1,        5,
 parent_time_step_ratio   = 1,        5,
 feedback                 = 1,
 smooth_option            = 0,
+max_ts_locs              = 5,    
+ts_buf_size              = @@ts_buf_size@@,
+max_ts_level             = 1,
+tslist_unstagger_winds   = True,
 /
 
 
