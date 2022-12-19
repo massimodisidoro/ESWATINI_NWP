@@ -78,7 +78,7 @@ echo "sleep 3" >>$script_real
    #loop=`date -d "$loop +1 day" +%Y%m%d`
 #done
 
-./real.exe &> $logdir/log_04_real_${date_forecast}.log
+./real.exe #&> $logdir/log_04_real_${date_forecast}.log
 
 #echo 'NCPUS=1 ; export NCPUS' >> $script_real
 #echo 'OMP_NUM_THREADS=1 ; export OMP_NUM_THREADS' >> $script_real

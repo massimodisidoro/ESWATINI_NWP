@@ -56,7 +56,7 @@ sed "s!@@geogrid_output@@!${dir_geogrid_files}!g" | \
 sed "s!@@metgrid_table_path@@!$metgrid_table_path!g" | \
 sed "s!@@metgrid_output@@!$dir_metgrid_files!g" > namelist.wps
 
-./metgrid.exe &> $logdir/log_03_metgrid_${date_forecast}.log
+./metgrid.exe #&> $logdir/log_03_metgrid_${date_forecast}.log
 
 #script_metgrid="metgrid.sh"
 #echo "#!/usr/bin/bash -i" > $script_metgrid

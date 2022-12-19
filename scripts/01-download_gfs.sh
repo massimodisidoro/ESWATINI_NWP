@@ -48,7 +48,7 @@ else # 0p50
   recnum0=416 # first file 
   recnum=443
 fi 
-URL2="&lev_0-0.1_m_below_ground=on&lev_0.1-0.4_m_below_ground=on&lev_0.4-1_m_below_ground=on&lev_1000_mb=on&lev_100_mb=on&lev_50_mb=on&lev_1-2_m_below_ground=on&lev_150_mb=on&lev_1_hybrid_level=on&lev_200_mb=on&lev_250_mb=on&lev_300_mb=on&lev_350_mb=on&lev_400_mb=on&lev_450_mb=on&lev_500_mb=on&lev_550_mb=on&lev_600_mb=on&lev_650_mb=on&lev_700_mb=on&lev_750_mb=on&lev_800_mb=on&lev_850_mb=on&lev_900_mb=on&lev_925_mb=on&lev_950_mb=on&lev_975_mb=onlev_planetary_boundary_layer=on&lev_tropopause=on&lev_mean_sea_level=on&lev_surface=on&all_var=on&subregion=&leftlon=15&rightlon=45&toplat=-15&bottomlat=-45&dir=%2Fgfs.${date_forecast}%2F${gfs_reference_time}%2Fatmos"
+URL2="&lev_0-0.1_m_below_ground=on&lev_0.1-0.4_m_below_ground=on&lev_0.4-1_m_below_ground=on&lev_1000_mb=on&lev_100_mb=on&lev_50_mb=on&lev_1-2_m_below_ground=on&lev_150_mb=on&lev_1_hybrid_level=on&lev_200_mb=on&lev_250_mb=on&lev_300_mb=on&lev_350_mb=on&lev_400_mb=on&lev_450_mb=on&lev_500_mb=on&lev_550_mb=on&lev_600_mb=on&lev_650_mb=on&lev_700_mb=on&lev_750_mb=on&lev_800_mb=on&lev_850_mb=on&lev_900_mb=on&lev_925_mb=on&lev_950_mb=on&lev_975_mb=onlev_planetary_boundary_layer=on&lev_tropopause=on&lev_mean_sea_level=on&lev_surface=on&all_var=on&subregion=&leftlon=23&rightlon=40&toplat=-20&bottomlat=-33&dir=%2Fgfs.${date_forecast}%2F${gfs_reference_time}%2Fatmos"
 
 # function to download gfs fields:
  download_gfs () {

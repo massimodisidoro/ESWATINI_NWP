@@ -12,10 +12,10 @@
 &geogrid
  parent_id         = 1,1,
  parent_grid_ratio = 1,5,
- i_parent_start    = 1,102,
- j_parent_start    = 1,82,
- e_we          = 272,356,
- e_sn          = 240,356,
+ i_parent_start    = 1,74,
+ j_parent_start    = 1,69,
+ e_we          = 200,281,
+ e_sn          = 200,296,
  !
  !!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT NOTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!
  ! The default datasets used to produce the MAXSNOALB and ALBEDO12M
@@ -29,7 +29,7 @@
  !
  !!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT NOTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!
  !
- geog_data_res = 'default','default',
+ geog_data_res = '10m','10m',
  dx = 5000,
  dy = 5000,
  map_proj =  'lambert',
@@ -40,8 +40,8 @@
  stand_lon = 31.446,
  geog_data_path = '@@geo_data@@'
  OPT_GEOGRID_TBL_PATH='@@geogrid_table_path@@',
- ref_x = 136.0,
- ref_y = 120.0,
+ ref_x = 100.0,
+ ref_y = 100.0,
 /
 
 &ungrib

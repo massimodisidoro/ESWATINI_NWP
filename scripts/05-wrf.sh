@@ -11,7 +11,7 @@ fi
 
 logdir=$dir_log/$date_forecast
 
-mkdir -p $logdir
+mkdir -p $logdir/wrflog
 mkdir -p $dir_tmp
 
 run_hours=$forecast_length
@@ -117,8 +117,8 @@ echo 'done' >> $script_wrf
 echo 'done' >> $script_wrf
 echo 'mpirun --bind-to socket --mca plm_rsh_agent "blaunch.sh" -n $N_procs --hostfile ./hosts.${LSB_JOBID}_$date $exe' >> $script_wrf
 echo 'sleep 5' >> $script_wrf
-echo "mv rsl* $logdir"  >>  $script_wrf
+echo "mv rsl* $logdir/wrflog"  >>  $script_wrf
 echo "cp namelist.input $logdir/namelist.input_$date_forecast"  >>  $script_wrf
 
 chmod 744 $script_wrf
-bsub  -n $nprocs_wrf -q $queue_name_parallel -o $logdir/wrf_${date_forecast}.out -e $logdir/wrf_${date_forecast}.err $script_wrf $cpu_omp $log
+bsub  -n $nprocs_wrf -q $queue_name_parallel -o $logdir/log_05-wrf_${date_forecast}.out -e $logdir/log_05-wrf_${date_forecast}.err $script_wrf $cpu_omp $log
