@@ -22,6 +22,10 @@ import cartopy.crs as crs
 import cartopy.feature as cf
 import cartopy.io.shapereader as shpreader
 
+from ruamel.yaml import YAML, YAMLError ; yaml = YAML()
+import logging
+
+
 #from cartopy.feature import NaturalEarthFeature
 from wrf import (to_np, getvar, vinterp, interplevel,smooth2d,ALL_TIMES,
                  get_cartopy, cartopy_xlim, cartopy_ylim, latlon_coords)
@@ -308,16 +312,40 @@ parser.add_argument("--start",
 parser.add_argument("--end",
                     type=int,
                     help="forecast step end")
+parser.add_argument("--deltastep",
+                    type=int,
+                    help="times processed every deltastep. Default=1",
+                    default = 1)
 parser.add_argument("--out",
                     type=str,
                     help="absolute path for outputs")
+parser.add_argument("--config_file",
+                    type=str,
+                    help="yaml configuration file containing variables"
+                         "to be plotted in output")
 
 args = parser.parse_args()
 wrf_file = args.wrfout_file
 start_step = args.start
 end_step = args.end
+deltastep = args.deltastep
 out_path = args.out
+config_file = args.config_file
 
+# read yaml configuration
+with open(config_file) as f:
+  try:
+      var_dict = yaml.load(f)
+  except YAMLError as e:
+      logger.error('Error reading WRF variables file:\n {}'.format(e))
+      #return False
+
+logger = logging.getLogger()
+logger.debug = print
+logger.info = print
+logger.error = print
+
+wrf_vars = var_dict
 #%%
 #debug
 #out_path='./'
@@ -375,379 +403,359 @@ for timeindex in range(start_step,end_step+1,1):
     string_forecast_step = "Forecast Time: " + forecast_step + \
     " hours, " + timeforecast.strftime("%d %B %Y, %H:%M")+ " UTC"
     print(string_forecast_step) 
-
-    # slp
-    mslp = getvar(ncfile,'slp',timeidx=timeindex)
-    mslp_smooth = smooth2d(mslp,3, cenweight=4)
-    
-    # strings for composing figure names
     t2 = timeforecast.strftime("%Y%m%d_%H%M")
-    
-    # Create the figures
-    #mean sea level pressure
-    title1 = "Mean Sea Level Pres. (hPa)"
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    levels_tag = 'mslp'
-    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    plotta_mappa_contour(levels_tag = levels_tag,
-                 field = mslp_smooth,
-                 cart_proj = cart_proj,
-                 lons = lons,
-                 lats = lats,
-                 string_date_init = string_date_init,
-                 string_date_forecast = string_date_forecast, 
-                 title = title, 
-                 colormap = "turbo", figurename = figurename)
-    #print('plotting ' + levels_tag)
-    #plt.savefig(figurename, dpi=90, bbox_inches='tight')
-    #plt.close()
-    del(mslp_smooth)
-    
-    #temperature at 2m
-    t2m = getvar(ncfile,'T2',timeidx=timeindex)-273.13 # in Celsius
-    t2m_smooth = smooth2d(t2m,3, cenweight=4)
-    title1 = "Temperature at 2 m (°C)"
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    levels_tag='t2m'
-    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    plotta_mappa(levels_tag = levels_tag,
-                  field = t2m_smooth,
-                  cart_proj = cart_proj,
-                  lons = lons,
-                  lats = lats,
-                  string_date_init = string_date_init,
-                  string_date_forecast = string_date_forecast,
-                  title = title,
-                  colormap = "turbo", figurename = figurename)
-    del(t2m)
-    
-    #wind at 10m
-    title1 = "Wind at 10m (m/s)"
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    U10 = getvar(ncfile, "U10", timeidx=timeindex)
-    V10 = getvar(ncfile, "V10", timeidx=timeindex)
-    wspd10 = getvar(ncfile, "wspd_wdir10",timeidx=timeindex)[0,:]
-    #wspd10 = np.sqrt(U10*U10+V10*V10)
-    levels_tag = 'w10m'
-    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    plotta_mappa_wind(levels_tag = levels_tag, 
-                      filled_contour = wspd10, 
-                      u = U10, 
-                      v = V10, 
-                      cart_proj = cart_proj, 
-                      lons = lons, 
-                      lats = lats, 
-                      string_date_init = string_date_init, 
-                      string_date_forecast = string_date_forecast, 
-                      title = title, figurename = figurename)
-    
-    # plot t2m + w10 vectors
-    #wind at 10m
-    #title1 = "2 m Temperature (°C) and Wind vectors at 10 m"
-    #title2 = string_date_init + "\n" + string_date_forecast
-    #title = title1 + "\n" + title2
-    #plotta_mappa_wind(levels_tag = 't2m',
-    #                  filled_contour = t2m_smooth,
-    #                  u = U10,
-    #                  v = V10,
-    #                  cart_proj = cart_proj,
-    #                  lons = lons,
-    #                  lats = lats,
-    #                  string_date_init = string_date_init,
-    #                  string_date_forecast = string_date_forecast,
-    #                  title = title)
-    #figurename = out_path +'/' + domain + '_t2m_w10m_init_' + t1 + "-forecast_time_" + t2 + forecast_step +".png"
-    #print('plotting ' + levels_tag)
-    #figurename = out_path + '/' + domain + '_t2m_w10m_init'+forecast_step +".png"
-    #plt.savefig(figurename, dpi=90, bbox_inches='tight')
-    #plt.close()
-    del(U10, V10, wspd10,t2m_smooth)
- 
-    #Rel Hum at 2m
-    title1 = "Relative Humidity at 2 m (%)"
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    rh2m = getvar(ncfile,'rh2', timeidx=timeindex)
-    rh2m_smooth = smooth2d(rh2m,3, cenweight=4)
-    levels_tag = 'rh2m'
-    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    plotta_mappa_contour(levels_tag = levels_tag,
-                 field = rh2m_smooth,
-                 cart_proj = cart_proj,
-                 lons = lons,
-                 lats = lats,
-                 string_date_init = string_date_init,
-                 string_date_forecast = string_date_forecast,
-                 title = title,
-                 colormap = "turbo", figurename = figurename)
-    del(rh2m, rh2m_smooth)
-    
-    #CAPE
-    #title1 = "CAPE (J/kg)"
-    #title2 = string_date_init + "\n" + string_date_forecast
-    #title = title1 + "\n" + title2
-    #cape_2d = getvar(ncfile, "cape_2d", timeidx = timeindex) 
-    #cape = cape_2d[0] #CAPE
-    #levels_tag = 'cape'
-    #figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    #plotta_mappa(levels_tag = levels_tag,
-    #              field = cape,
-    #              cart_proj = cart_proj,
-    #              lons = lons,
-    #              lats = lats,
-    #              string_date_init = string_date_init,
-    #              string_date_forecast = string_date_forecast,
-    #              title = title,
-    #              colormap = "turbo", figurename = figurename)
-    #del(cape)
-    #
-    #title1 = "CIN (J/kg)"
-    #title2 = string_date_init + "\n" + string_date_forecast
-    #title = title1 + "\n" + title2
-    #cin = cape_2d[1] #CIN
-    #plotta_mappa(levels_tag = 'cin',
-    #             field = cin,
-    #             cart_proj = cart_proj,
-    #             lons = lons,
-    #             lats = lats,
-    #             string_date_init = string_date_init,
-    #             string_date_forecast = string_date_forecast,
-    #             title = title,
-    #             colormap = "turbo")
-    #figurename = out_path + '/' + domain +'_CIN_init_' + t1 + "-forecast_time_" + t2 + forecast_step +".png"
-    #print('plotting ' + levels_tag)
-    #plt.savefig(figurename, dpi=90, bbox_inches='tight')
-    #plt.close()
-    #del(cin, cape_2d)
-    
-    #cloudfraction, low, med, high
-    print('reading cloudfrac')
-    cloudfrac = getvar(ncfile,'cloudfrac', timeidx=timeindex)*100
-    #cloud_low = cloudfrac[0,:,:]
-    #cloud_med = cloudfrac[1,:,:]
-    #cloud_high = cloudfrac[2,:,:]
-    total_cloud_cover = np.amax(cloudfrac, axis=0)
-    print('computed  TCC')
-    title1 = "Cloud Cover (%)"
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    levels_tag = 'tcc'
-    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    plotta_mappa(levels_tag = levels_tag,
-                 field = total_cloud_cover,
-                 cart_proj = cart_proj,
-                 lons = lons,
-                 lats = lats,
-                 string_date_init = string_date_init,
-                 string_date_forecast = string_date_forecast,
-                 title = title,
-                 colormap = "Blues_r", figurename = figurename)
-    del(cloudfrac, total_cloud_cover)
-    
-    #total precipitation
-    
-    #title1 = "Total Accumulated Precipitation (mm)"
-    #title2 = string_date_init + "\n" + string_date_forecast
-    #title = title1 + "\n" + title2
-    #totprec_acc = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
-                  #getvar(ncfile, 'RAINNC', timeidx=timeindex)
-    #levels_tag = 'totprec_acc'         
-    #figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    #plotta_mappa(levels_tag = levels_tag,
-    #             field = totprec_acc,
-    #             cart_proj = cart_proj,
-    #             lons = lons,
-    #             lats = lats,
-    #             string_date_init = string_date_init,
-    #             string_date_forecast = string_date_forecast,
-    #             title = title,
-    #             colormap = "prec", figurename = figurename)
-    #del(totprec_acc)
-    #if timeindex == start_step:
-       #totprec = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
-                  #getvar(ncfile, 'RAINNC', timeidx=timeindex)
-       #deltaprec = totprec
-    #else:
-       #totprec = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
-                  #getvar(ncfile, 'RAINNC', timeidx=timeindex)
-       #totprec_m1 = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
-                  #getvar(ncfile, 'RAINNC', timeidx=timeindex -1)
-       #deltaprec = totprec - totprec_m1
 
-    #hourly prec, 3h  6h, 12h
-    #if timeindex >= time_offset:
-    totprec_h = getvar(ncfile, 'PREC_ACC_NC', timeidx=timeindex) + \
-                getvar(ncfile, 'PREC_ACC_C', timeidx=timeindex)
-    totprec_3h = totprec_3h + totprec_h 
-    totprec_6h = totprec_6h + totprec_h 
-    totprec_12h = totprec_12h + totprec_h 
-    totprec_24h = totprec_24h + totprec_h 
-    #3h
-    if timeindex % 3 == 0:
-       title1 = "Accumulated 3 h precipitation (mm)"
-       title2 = string_date_init + "\n" + string_date_forecast
-       title = title1 + "\n" + title2
-       levels_tag = '3hourly_prec' #levels
-       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-       plotta_mappa(levels_tag = levels_tag,
-           field = totprec_3h,
-           cart_proj = cart_proj,
-           lons = lons,
-           lats = lats,
-           string_date_init = string_date_init,
-           string_date_forecast = string_date_forecast,
-           title = title,
-           colormap = "prec", figurename = figurename)
-       totprec_3h = 0
-    #6h
-    if timeindex % 6 == 0:
-       title1 = "Accumulated 6 h precipitation (mm)"
-       title2 = string_date_init + "\n" + string_date_forecast
-       title = title1 + "\n" + title2
-       levels_tag = '6hourly_prec' #levels
-       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-       plotta_mappa(levels_tag = levels_tag,
-           field = totprec_6h,
-           cart_proj = cart_proj,
-           lons = lons,
-           lats = lats,
-           string_date_init = string_date_init,
-           string_date_forecast = string_date_forecast,
-           title = title,
-           colormap = "prec", figurename = figurename)
-       totprec_6h = 0
-    #12h
-    if timeindex % 12 == 0: 
-       title1 = "Accumulated 12 h precipitation (mm)"
-       title2 = string_date_init + "\n" + string_date_forecast
-       title = title1 + "\n" + title2
-       levels_tag = '12hourly_prec' #levels
-       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-       plotta_mappa(levels_tag = levels_tag,
-           field = totprec_12h,
-           cart_proj = cart_proj,
-           lons = lons,
-           lats = lats,
-           string_date_init = string_date_init,
-           string_date_forecast = string_date_forecast,
-           title = title,
-           colormap = "prec", figurename = figurename)
-       totprec_12h = 0
-
-    if timeindex % 24 == 0: #resto =6
-       title1 = "Accumulated 24 h precipitation (mm)"
-       title2 = string_date_init + "\n" + string_date_forecast
-       title = title1 + "\n" + title2
-       levels_tag = '24hourly_prec' #levels
-       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-       plotta_mappa(levels_tag = levels_tag,
-           field = totprec_24h,
-           cart_proj = cart_proj,
-           lons = lons,
-           lats = lats,
-           string_date_init = string_date_init,
-           string_date_forecast = string_date_forecast,
-           title = title,
-           colormap = "prec", figurename = figurename)
-       totprec_24h = 0
-    #1h
-    title1 = "Hourly Precipitation acc (mm)"
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    levels_tag = 'hourly_prec'
-    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    plotta_mappa(levels_tag = levels_tag,
-                 field = totprec_h,
-                 cart_proj = cart_proj,
-                 lons = lons,
-                 lats = lats,
-                 string_date_init = string_date_init,
-                 string_date_forecast = string_date_forecast,
-                 title = title,
-                 colormap = "prec", figurename = figurename)
-    del(totprec_h)
+    for v in wrf_vars:
+    # mettere un if campo doppio
+        logger.info('Processing variable: {}'.format(v))
+        wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
+        if v == 'slp':
+            wrfv = smooth2d(wrfv,3, cenweight=4)
     
-    #pressure levels
-    pressure = getvar(ncfile,'pres', timeidx = timeindex, units='hPa')
-    geop = getvar(ncfile,'geopt', timeidx=timeindex)/98.1 #dam
-    #temp = getvar(ncfile,'temp',units='degC', timeidx = timeindex)
-    temp = getvar(ncfile,'tc', timeidx = timeindex)
-    ua = getvar(ncfile, "ua",timeidx=timeindex)
-    va = getvar(ncfile, "va",timeidx=timeindex)
-    wspd = getvar(ncfile, "wspd_wdir",timeidx=timeindex)[0,:]
+        # Create the figures
+        #mean sea level pressure
+        title1 = wrf_vars[v]['title']
+        title2 = string_date_init + "\n" + string_date_forecast
+        title = title1 + "\n" + title2
+        levels_tag = 'mslp'
+        figurename = out_path + '/'+domain+'_'+levels_tag+forecast_step +".png"
+        plotta_mappa_contour(levels_tag = levels_tag,
+                     field = wrfv,
+                     cart_proj = cart_proj,
+                     lons = lons,
+                     lats = lats,
+                     string_date_init = string_date_init,
+                     string_date_forecast = string_date_forecast, 
+                     title = title, 
+                     colormap = "turbo", figurename = figurename)
+        del(wrfv)
     
-    #pressure_levels = [300, 500, 700, 850]
-    #pressure_levels = [500, 700, 850]
-    pressure_levels = [250,300, 500, 700, 850]
-
-    for level in pressure_levels:
-        if level == 850:
-          labelz = 'z850'
-          #labelz = -999 # if -999, not computed nor plotted
-          labelt = 't850'
-          labelw = 'w850'
-        elif level == 700:
-          labelz = 'z700'
-          #labelz = -999 #not computed and plotted
-          labelt = 't700'
-          labelw = 'w700'
-        elif level == 500:
-          labelz = 'z500'
-          labelt = 't500'
-          labelw = 'w500'
-        elif level == 300:
-          labelz = 'z300'
-          labelt = 't300'
-          labelw = 'w300'
-          #labelz = -999
-          #labelt = -999
-          #labelw = -999
-        elif level == 250:
-          #labelz = 'z250'
-          #labelt = 't250'
-          #labelw = 'w250'
-          labelz = -999
-          labelt = -999
-          labelw = -999
-
-        print("Processing level (hPa) " , level) 
-        if isinstance(labelz,str) and len(labelz) > 0 \
-           and isinstance(labelt,str) and len(labelt) > 0:
-           title1 = "GPH and Temperature at " + str(level) +"hPa (dam)"
-           title2 = string_date_init + "\n" + string_date_forecast
-           title = title1 + "\n" + title2
-           z_press = interp_pressure_level(ncfile, level, geop, pressure)
-           t_press = interp_pressure_level(ncfile, level, temp, pressure)
-           levels_tag_contour = labelz 
-           levels_tag_fill = labelt 
-           figurename = out_path + '/' + domain +'_' + levels_tag_contour+forecast_step +".png"
-           plotta_mappa_contour_and_fill(
-                         levels_tag_contour = levels_tag_contour,
-                         levels_tag_fill = levels_tag_fill,
-                         field_contour = z_press,
-                         field_fill = t_press,
-                         cart_proj = cart_proj,
-                         lons = lons,
-                         lats = lats,
-                         string_date_init = string_date_init,
-                         string_date_forecast = string_date_forecast,
-                         title = title,
-                         colormap = "turbo", figurename = figurename)
-           del(z_press, t_press)
-           
-          
-#        if isinstance(labelt,str) and len(labelt) > 0:
-#           title1 = "Temperature at " + str(level) +"hPa (°C)"
+    
+#    #temperature at 2m
+#    t2m = getvar(ncfile,'T2',timeidx=timeindex)-273.13 # in Celsius
+#    t2m_smooth = smooth2d(t2m,3, cenweight=4)
+#    title1 = "Temperature at 2 m (°C)"
+#    title2 = string_date_init + "\n" + string_date_forecast
+#    title = title1 + "\n" + title2
+#    levels_tag='t2m'
+#    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    plotta_mappa(levels_tag = levels_tag,
+#                  field = t2m_smooth,
+#                  cart_proj = cart_proj,
+#                  lons = lons,
+#                  lats = lats,
+#                  string_date_init = string_date_init,
+#                  string_date_forecast = string_date_forecast,
+#                  title = title,
+#                  colormap = "turbo", figurename = figurename)
+#    del(t2m)
+#    
+#    #wind at 10m
+#    title1 = "Wind at 10m (m/s)"
+#    title2 = string_date_init + "\n" + string_date_forecast
+#    title = title1 + "\n" + title2
+#    U10 = getvar(ncfile, "U10", timeidx=timeindex)
+#    V10 = getvar(ncfile, "V10", timeidx=timeindex)
+#    wspd10 = getvar(ncfile, "wspd_wdir10",timeidx=timeindex)[0,:]
+#    #wspd10 = np.sqrt(U10*U10+V10*V10)
+#    levels_tag = 'w10m'
+#    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    plotta_mappa_wind(levels_tag = levels_tag, 
+#                      filled_contour = wspd10, 
+#                      u = U10, 
+#                      v = V10, 
+#                      cart_proj = cart_proj, 
+#                      lons = lons, 
+#                      lats = lats, 
+#                      string_date_init = string_date_init, 
+#                      string_date_forecast = string_date_forecast, 
+#                      title = title, figurename = figurename)
+#    
+#    # plot t2m + w10 vectors
+#    #wind at 10m
+#    #title1 = "2 m Temperature (°C) and Wind vectors at 10 m"
+#    #title2 = string_date_init + "\n" + string_date_forecast
+#    #title = title1 + "\n" + title2
+#    #plotta_mappa_wind(levels_tag = 't2m',
+#    #                  filled_contour = t2m_smooth,
+#    #                  u = U10,
+#    #                  v = V10,
+#    #                  cart_proj = cart_proj,
+#    #                  lons = lons,
+#    #                  lats = lats,
+#    #                  string_date_init = string_date_init,
+#    #                  string_date_forecast = string_date_forecast,
+#    #                  title = title)
+#    #figurename = out_path +'/' + domain + '_t2m_w10m_init_' + t1 + "-forecast_time_" + t2 + forecast_step +".png"
+#    #print('plotting ' + levels_tag)
+#    #figurename = out_path + '/' + domain + '_t2m_w10m_init'+forecast_step +".png"
+#    #plt.savefig(figurename, dpi=90, bbox_inches='tight')
+#    #plt.close()
+#    del(U10, V10, wspd10,t2m_smooth)
+# 
+#    #Rel Hum at 2m
+#    title1 = "Relative Humidity at 2 m (%)"
+#    title2 = string_date_init + "\n" + string_date_forecast
+#    title = title1 + "\n" + title2
+#    rh2m = getvar(ncfile,'rh2', timeidx=timeindex)
+#    rh2m_smooth = smooth2d(rh2m,3, cenweight=4)
+#    levels_tag = 'rh2m'
+#    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    plotta_mappa_contour(levels_tag = levels_tag,
+#                 field = rh2m_smooth,
+#                 cart_proj = cart_proj,
+#                 lons = lons,
+#                 lats = lats,
+#                 string_date_init = string_date_init,
+#                 string_date_forecast = string_date_forecast,
+#                 title = title,
+#                 colormap = "turbo", figurename = figurename)
+#    del(rh2m, rh2m_smooth)
+#    
+#    #CAPE
+#    #title1 = "CAPE (J/kg)"
+#    #title2 = string_date_init + "\n" + string_date_forecast
+#    #title = title1 + "\n" + title2
+#    #cape_2d = getvar(ncfile, "cape_2d", timeidx = timeindex) 
+#    #cape = cape_2d[0] #CAPE
+#    #levels_tag = 'cape'
+#    #figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    #plotta_mappa(levels_tag = levels_tag,
+#    #              field = cape,
+#    #              cart_proj = cart_proj,
+#    #              lons = lons,
+#    #              lats = lats,
+#    #              string_date_init = string_date_init,
+#    #              string_date_forecast = string_date_forecast,
+#    #              title = title,
+#    #              colormap = "turbo", figurename = figurename)
+#    #del(cape)
+#    #
+#    #title1 = "CIN (J/kg)"
+#    #title2 = string_date_init + "\n" + string_date_forecast
+#    #title = title1 + "\n" + title2
+#    #cin = cape_2d[1] #CIN
+#    #plotta_mappa(levels_tag = 'cin',
+#    #             field = cin,
+#    #             cart_proj = cart_proj,
+#    #             lons = lons,
+#    #             lats = lats,
+#    #             string_date_init = string_date_init,
+#    #             string_date_forecast = string_date_forecast,
+#    #             title = title,
+#    #             colormap = "turbo")
+#    #figurename = out_path + '/' + domain +'_CIN_init_' + t1 + "-forecast_time_" + t2 + forecast_step +".png"
+#    #print('plotting ' + levels_tag)
+#    #plt.savefig(figurename, dpi=90, bbox_inches='tight')
+#    #plt.close()
+#    #del(cin, cape_2d)
+#    
+#    #cloudfraction, low, med, high
+#    print('reading cloudfrac')
+#    cloudfrac = getvar(ncfile,'cloudfrac', timeidx=timeindex)*100
+#    #cloud_low = cloudfrac[0,:,:]
+#    #cloud_med = cloudfrac[1,:,:]
+#    #cloud_high = cloudfrac[2,:,:]
+#    total_cloud_cover = np.amax(cloudfrac, axis=0)
+#    print('computed  TCC')
+#    title1 = "Cloud Cover (%)"
+#    title2 = string_date_init + "\n" + string_date_forecast
+#    title = title1 + "\n" + title2
+#    levels_tag = 'tcc'
+#    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    plotta_mappa(levels_tag = levels_tag,
+#                 field = total_cloud_cover,
+#                 cart_proj = cart_proj,
+#                 lons = lons,
+#                 lats = lats,
+#                 string_date_init = string_date_init,
+#                 string_date_forecast = string_date_forecast,
+#                 title = title,
+#                 colormap = "Blues_r", figurename = figurename)
+#    del(cloudfrac, total_cloud_cover)
+#    
+#    #total precipitation
+#    
+#    #title1 = "Total Accumulated Precipitation (mm)"
+#    #title2 = string_date_init + "\n" + string_date_forecast
+#    #title = title1 + "\n" + title2
+#    #totprec_acc = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
+#                  #getvar(ncfile, 'RAINNC', timeidx=timeindex)
+#    #levels_tag = 'totprec_acc'         
+#    #figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    #plotta_mappa(levels_tag = levels_tag,
+#    #             field = totprec_acc,
+#    #             cart_proj = cart_proj,
+#    #             lons = lons,
+#    #             lats = lats,
+#    #             string_date_init = string_date_init,
+#    #             string_date_forecast = string_date_forecast,
+#    #             title = title,
+#    #             colormap = "prec", figurename = figurename)
+#    #del(totprec_acc)
+#    #if timeindex == start_step:
+#       #totprec = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
+#                  #getvar(ncfile, 'RAINNC', timeidx=timeindex)
+#       #deltaprec = totprec
+#    #else:
+#       #totprec = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
+#                  #getvar(ncfile, 'RAINNC', timeidx=timeindex)
+#       #totprec_m1 = getvar(ncfile, 'RAINC', timeidx=timeindex) + \
+#                  #getvar(ncfile, 'RAINNC', timeidx=timeindex -1)
+#       #deltaprec = totprec - totprec_m1
+#
+#    #hourly prec, 3h  6h, 12h
+#    #if timeindex >= time_offset:
+#    totprec_h = getvar(ncfile, 'PREC_ACC_NC', timeidx=timeindex) + \
+#                getvar(ncfile, 'PREC_ACC_C', timeidx=timeindex)
+#    totprec_3h = totprec_3h + totprec_h 
+#    totprec_6h = totprec_6h + totprec_h 
+#    totprec_12h = totprec_12h + totprec_h 
+#    totprec_24h = totprec_24h + totprec_h 
+#    #3h
+#    if timeindex % 3 == 0:
+#       title1 = "Accumulated 3 h precipitation (mm)"
+#       title2 = string_date_init + "\n" + string_date_forecast
+#       title = title1 + "\n" + title2
+#       levels_tag = '3hourly_prec' #levels
+#       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#       plotta_mappa(levels_tag = levels_tag,
+#           field = totprec_3h,
+#           cart_proj = cart_proj,
+#           lons = lons,
+#           lats = lats,
+#           string_date_init = string_date_init,
+#           string_date_forecast = string_date_forecast,
+#           title = title,
+#           colormap = "prec", figurename = figurename)
+#       totprec_3h = 0
+#    #6h
+#    if timeindex % 6 == 0:
+#       title1 = "Accumulated 6 h precipitation (mm)"
+#       title2 = string_date_init + "\n" + string_date_forecast
+#       title = title1 + "\n" + title2
+#       levels_tag = '6hourly_prec' #levels
+#       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#       plotta_mappa(levels_tag = levels_tag,
+#           field = totprec_6h,
+#           cart_proj = cart_proj,
+#           lons = lons,
+#           lats = lats,
+#           string_date_init = string_date_init,
+#           string_date_forecast = string_date_forecast,
+#           title = title,
+#           colormap = "prec", figurename = figurename)
+#       totprec_6h = 0
+#    #12h
+#    if timeindex % 12 == 0: 
+#       title1 = "Accumulated 12 h precipitation (mm)"
+#       title2 = string_date_init + "\n" + string_date_forecast
+#       title = title1 + "\n" + title2
+#       levels_tag = '12hourly_prec' #levels
+#       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#       plotta_mappa(levels_tag = levels_tag,
+#           field = totprec_12h,
+#           cart_proj = cart_proj,
+#           lons = lons,
+#           lats = lats,
+#           string_date_init = string_date_init,
+#           string_date_forecast = string_date_forecast,
+#           title = title,
+#           colormap = "prec", figurename = figurename)
+#       totprec_12h = 0
+#
+#    if timeindex % 24 == 0: #resto =6
+#       title1 = "Accumulated 24 h precipitation (mm)"
+#       title2 = string_date_init + "\n" + string_date_forecast
+#       title = title1 + "\n" + title2
+#       levels_tag = '24hourly_prec' #levels
+#       figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#       plotta_mappa(levels_tag = levels_tag,
+#           field = totprec_24h,
+#           cart_proj = cart_proj,
+#           lons = lons,
+#           lats = lats,
+#           string_date_init = string_date_init,
+#           string_date_forecast = string_date_forecast,
+#           title = title,
+#           colormap = "prec", figurename = figurename)
+#       totprec_24h = 0
+#    #1h
+#    title1 = "Hourly Precipitation acc (mm)"
+#    title2 = string_date_init + "\n" + string_date_forecast
+#    title = title1 + "\n" + title2
+#    levels_tag = 'hourly_prec'
+#    figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#    plotta_mappa(levels_tag = levels_tag,
+#                 field = totprec_h,
+#                 cart_proj = cart_proj,
+#                 lons = lons,
+#                 lats = lats,
+#                 string_date_init = string_date_init,
+#                 string_date_forecast = string_date_forecast,
+#                 title = title,
+#                 colormap = "prec", figurename = figurename)
+#    del(totprec_h)
+#    
+#    #pressure levels
+#    pressure = getvar(ncfile,'pres', timeidx = timeindex, units='hPa')
+#    geop = getvar(ncfile,'geopt', timeidx=timeindex)/98.1 #dam
+#    #temp = getvar(ncfile,'temp',units='degC', timeidx = timeindex)
+#    temp = getvar(ncfile,'tc', timeidx = timeindex)
+#    ua = getvar(ncfile, "ua",timeidx=timeindex)
+#    va = getvar(ncfile, "va",timeidx=timeindex)
+#    wspd = getvar(ncfile, "wspd_wdir",timeidx=timeindex)[0,:]
+#    
+#    #pressure_levels = [300, 500, 700, 850]
+#    #pressure_levels = [500, 700, 850]
+#    pressure_levels = [250,300, 500, 700, 850]
+#
+#    for level in pressure_levels:
+#        if level == 850:
+#          labelz = 'z850'
+#          #labelz = -999 # if -999, not computed nor plotted
+#          labelt = 't850'
+#          labelw = 'w850'
+#        elif level == 700:
+#          labelz = 'z700'
+#          #labelz = -999 #not computed and plotted
+#          labelt = 't700'
+#          labelw = 'w700'
+#        elif level == 500:
+#          labelz = 'z500'
+#          labelt = 't500'
+#          labelw = 'w500'
+#        elif level == 300:
+#          labelz = 'z300'
+#          labelt = 't300'
+#          labelw = 'w300'
+#          #labelz = -999
+#          #labelt = -999
+#          #labelw = -999
+#        elif level == 250:
+#          #labelz = 'z250'
+#          #labelt = 't250'
+#          #labelw = 'w250'
+#          labelz = -999
+#          labelt = -999
+#          labelw = -999
+#
+#        print("Processing level (hPa) " , level) 
+#        if isinstance(labelz,str) and len(labelz) > 0 \
+#           and isinstance(labelt,str) and len(labelt) > 0:
+#           title1 = "GPH and Temperature at " + str(level) +"hPa (dam)"
 #           title2 = string_date_init + "\n" + string_date_forecast
 #           title = title1 + "\n" + title2
+#           z_press = interp_pressure_level(ncfile, level, geop, pressure)
 #           t_press = interp_pressure_level(ncfile, level, temp, pressure)
-#           levels_tag = labelt
-#           figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-#           plotta_mappa_contour(levels_tag = levels_tag,
-#                         field = t_press,
+#           levels_tag_contour = labelz 
+#           levels_tag_fill = labelt 
+#           figurename = out_path + '/' + domain +'_' + levels_tag_contour+forecast_step +".png"
+#           plotta_mappa_contour_and_fill(
+#                         levels_tag_contour = levels_tag_contour,
+#                         levels_tag_fill = levels_tag_fill,
+#                         field_contour = z_press,
+#                         field_fill = t_press,
 #                         cart_proj = cart_proj,
 #                         lons = lons,
 #                         lats = lats,
@@ -755,27 +763,46 @@ for timeindex in range(start_step,end_step+1,1):
 #                         string_date_forecast = string_date_forecast,
 #                         title = title,
 #                         colormap = "turbo", figurename = figurename)
-#           del(t_press)
-            
-        if isinstance(labelw,str) and len(labelw) > 0:
-           title1 = "Wind  at " + str(level) +"hPa (m/s)"
-           title2 = string_date_init + "\n" + string_date_forecast
-           title = title1 + "\n" + title2
-           ua_press = interp_pressure_level(ncfile,level, ua, pressure)
-           va_press =interp_pressure_level(ncfile,level, va, pressure)
-           wspd_press =interp_pressure_level(ncfile,level, wspd, pressure)
-           levels_tag = labelw
-           figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-           plotta_mappa_wind(levels_tag = levels_tag,
-                          filled_contour = wspd_press,
-                          u = ua_press,
-                          v = va_press,
-                          cart_proj = cart_proj,
-                          lons = lons,
-                          lats = lats,
-                          string_date_init = string_date_init,
-                          string_date_forecast = string_date_forecast,
-                          title = title, figurename = figurename)
-           del(wspd_press)
-
-    del(temp, ua, va, pressure, geop)
+#           del(z_press, t_press)
+#           
+#          
+##        if isinstance(labelt,str) and len(labelt) > 0:
+##           title1 = "Temperature at " + str(level) +"hPa (°C)"
+##           title2 = string_date_init + "\n" + string_date_forecast
+##           title = title1 + "\n" + title2
+##           t_press = interp_pressure_level(ncfile, level, temp, pressure)
+##           levels_tag = labelt
+##           figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+##           plotta_mappa_contour(levels_tag = levels_tag,
+##                         field = t_press,
+##                         cart_proj = cart_proj,
+##                         lons = lons,
+##                         lats = lats,
+##                         string_date_init = string_date_init,
+##                         string_date_forecast = string_date_forecast,
+##                         title = title,
+##                         colormap = "turbo", figurename = figurename)
+##           del(t_press)
+#            
+#        if isinstance(labelw,str) and len(labelw) > 0:
+#           title1 = "Wind  at " + str(level) +"hPa (m/s)"
+#           title2 = string_date_init + "\n" + string_date_forecast
+#           title = title1 + "\n" + title2
+#           ua_press = interp_pressure_level(ncfile,level, ua, pressure)
+#           va_press =interp_pressure_level(ncfile,level, va, pressure)
+#           wspd_press =interp_pressure_level(ncfile,level, wspd, pressure)
+#           levels_tag = labelw
+#           figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
+#           plotta_mappa_wind(levels_tag = levels_tag,
+#                          filled_contour = wspd_press,
+#                          u = ua_press,
+#                          v = va_press,
+#                          cart_proj = cart_proj,
+#                          lons = lons,
+#                          lats = lats,
+#                          string_date_init = string_date_init,
+#                          string_date_forecast = string_date_forecast,
+#                          title = title, figurename = figurename)
+#           del(wspd_press)
+#
+#    del(temp, ua, va, pressure, geop)
