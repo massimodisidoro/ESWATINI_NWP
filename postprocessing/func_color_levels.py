@@ -59,7 +59,7 @@ def color_levels(levels_tag):
         levels = np.arange(300, 380, 3)
         extend_colorbar = 'both'
     elif levels_tag == 'z500':
-        levels = np.arange(540, 600, 3)
+        levels = np.arange(560, 600, 2)
         extend_colorbar = 'both'
     elif levels_tag == 'z300':
         levels = np.arange(920, 1000, 5)
@@ -74,7 +74,7 @@ def color_levels(levels_tag):
         levels = np.arange(-2, 20, 1)
         extend_colorbar = 'both'
     elif levels_tag == 't500':
-        levels = np.arange(-24,4, 2)
+        levels = np.arange(-20,4, 8)
         extend_colorbar = 'both'
     elif levels_tag == 't300':
         levels = np.arange(-50, -24, 2)
