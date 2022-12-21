@@ -216,7 +216,7 @@ def make_plots(wrf_vars,v):
            levels_tag2 = wrf_vars[v]['levels_tag2']
 
         figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    else: #pressurelevels
+    else if plot_type == 'lev': #pressurelevels
         pressure_level = wrf_vars[v]['pressure_level']
         pressure = getvar(ncfile,'pres', timeidx = timeindex, units='hPa')
 
@@ -281,7 +281,106 @@ def make_plots(wrf_vars,v):
              overlap_fields = overlap_fields)
     del(wrfv)
     
-    
+    #precipitation sprocessed separately
+    if plot_type == 'prec': 
+        totprec_h = getvar(ncfile, 'PREC_ACC_NC', timeidx=timeindex) + \
+                    getvar(ncfile, 'PREC_ACC_C', timeidx=timeindex)
+        totprec_3h = totprec_3h + totprec_h
+        totprec_6h = totprec_6h + totprec_h
+        totprec_12h = totprec_12h + totprec_h
+        totprec_24h = totprec_24h + totprec_h
+        title1 = wrf_vars[v]['title']
+        title2 = string_date_init + "\n" + string_date_forecast
+        title = title1 + "\n" + title2
+        if timeindex % 3 == 0:
+            if wrf_vars[v]['levels_tag'] == '3hourly_prec'
+                figurename = out_path + '/' + domain +'_' + levels_tag + \
+                             forecast_step +".png"
+                plot_map(levels_tag = levels_tag,
+                         field_fill = totprec_3h,
+                         cart_proj = cart_proj,
+                         lons = lons,
+                         lats = lats,
+                         string_date_init = string_date_init,
+                         string_date_forecast = string_date_forecast,
+                         title = title,
+                         colormap = 'prec',
+                         figurename = figurename,
+                         levels_tag2 = 'none',
+                         field_contour = 'none',
+                         u_wind = 'none',
+                         v_wind = 'none',
+                         ws = 'none',
+                         contour = False,
+                         windvectors = False,
+                         overlap_fields =False)
+        if timeindex % 6 == 0:
+            if wrf_vars[v]['levels_tag'] == '6hourly_prec'
+                figurename = out_path + '/' + domain +'_' + levels_tag + \
+                             forecast_step +".png"
+                plot_map(levels_tag = levels_tag,
+                         field_fill = totprec_6h,
+                         cart_proj = cart_proj,
+                         lons = lons,
+                         lats = lats,
+                         string_date_init = string_date_init,
+                         string_date_forecast = string_date_forecast,
+                         title = title,
+                         colormap = 'prec',
+                         figurename = figurename,
+                         levels_tag2 = 'none',
+                         field_contour = 'none',
+                         u_wind = 'none',
+                         v_wind = 'none',
+                         ws = 'none',
+                         contour = False,
+                         windvectors = False,
+                         overlap_fields =False)
+        if timeindex % 12 == 0:
+            if wrf_vars[v]['levels_tag'] == '12hourly_prec'
+                figurename = out_path + '/' + domain +'_' + levels_tag + \
+                             forecast_step +".png"
+                plot_map(levels_tag = levels_tag,
+                         field_fill = totprec_12h,
+                         cart_proj = cart_proj,
+                         lons = lons,
+                         lats = lats,
+                         string_date_init = string_date_init,
+                         string_date_forecast = string_date_forecast,
+                         title = title,
+                         colormap = 'prec',
+                         figurename = figurename,
+                         levels_tag2 = 'none',
+                         field_contour = 'none',
+                         u_wind = 'none',
+                         v_wind = 'none',
+                         ws = 'none',
+                         contour = False,
+                         windvectors = False,
+                         overlap_fields =False)
+        if timeindex % 24 == 0:
+            if wrf_vars[v]['levels_tag'] == '24hourly_prec'
+                figurename = out_path + '/' + domain +'_' + levels_tag + \
+                             forecast_step +".png"
+                plot_map(levels_tag = levels_tag,
+                         field_fill = totprec_24h,
+                         cart_proj = cart_proj,
+                         lons = lons,
+                         lats = lats,
+                         string_date_init = string_date_init,
+                         string_date_forecast = string_date_forecast,
+                         title = title,
+                         colormap = 'prec',
+                         figurename = figurename,
+                         levels_tag2 = 'none',
+                         field_contour = 'none',
+                         u_wind = 'none',
+                         v_wind = 'none',
+                         ws = 'none',
+                         contour = False,
+                         windvectors = False,
+                         overlap_fields =False)
+   del(wrfv) 
 
 #%%
 #debug
