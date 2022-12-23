@@ -34,23 +34,18 @@ def color_levels(levels_tag):
         extend_colorbar = 'both'
     elif levels_tag == 'hourly_prec':
         levels = (0.5,1,3,5,7,10,15,20,25,30,40,50,60,70,80,100,125,150,175,200,250,300,350)
-        #levels = (0.5,2.5,5,10,15,20,25,30,35,40,45,50,60,70,80,100,120)
         extend_colorbar = 'both'
     elif levels_tag == '3hourly_prec':
         levels = (0.5,1,3,5,7,10,15,20,25,30,40,50,60,70,80,100,125,150,175,200,250,300,350)
-        #levels = (0.5,1,3,5,10,15,25,50,75,100,125,150,175,200,225,250,300,350)
         extend_colorbar = 'both'
     elif levels_tag == '6hourly_prec':
         levels = (0.5,1,3,5,7,10,15,20,25,30,40,50,60,70,80,100,125,150,175,200,250,300,350)
-        #levels = (1,3,5,10,15,25,50,75,100,125,150,175,200,225,250,300,350)
         extend_colorbar = 'both'
     elif levels_tag == '12hourly_prec':
         levels = (0.5,1,3,5,7,10,15,20,25,30,40,50,60,70,80,100,125,150,175,200,250,300,350)
-        #levels = (1,3,5,10,15,25,50,75,100,125,150,175,200,225,250,300,350)
         extend_colorbar = 'both'
     elif levels_tag == '24hourly_prec':
         levels = (0.5,1,3,5,7,10,15,20,25,30,40,50,60,70,80,100,125,150,175,200,250,300,350)
-        #levels = (1,3,5,10,15,25,50,75,100,125,150,175,200,225,250,300,350)
         extend_colorbar = 'both'
     elif levels_tag == 'z850':
         levels = np.arange(150, 180, 2)
@@ -102,4 +97,3 @@ def color_levels(levels_tag):
         extend_colorbar = 'both'
 
     return levels, extend_colorbar # returns two values
-

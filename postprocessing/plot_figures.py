@@ -9,7 +9,6 @@ from __future__ import print_function
 
 import argparse
 from func_color_levels import color_levels
-#import numpy as np
 import pandas as pd 
 from netCDF4 import Dataset
 import os    
@@ -64,7 +63,7 @@ def plot_map(levels_tag,
     ax.add_feature(cf.COASTLINE)
     ax.add_feature(cf.BORDERS)
     if colormap == 'prec':
-        levels = color_levels(levels_tag)[0]
+        levels_fill = color_levels(levels_tag)[0]
         extend_colorbar = color_levels(levels_tag)[1]
         cmap_data = [(160/255,1,1),
            (100/255, 1, 1), 
@@ -92,9 +91,9 @@ def plot_map(levels_tag,
         colmap = mcolors.ListedColormap(cmap_data, 'custom_prec')
         cmap=get_cmap(colmap)
         cmap.set_extremes(under='white', over=(80/255,35/255,0))
-        norm = mcolors.BoundaryNorm(levels, colmap.N)
+        norm = mcolors.BoundaryNorm(levels_fill, colmap.N)
         plt.contourf(to_np(lons), to_np(lats), to_np(field_fill), 10,
-                 levels = levels,transform=crs.PlateCarree(),
+                 levels = levels_fill,transform=crs.PlateCarree(),
                  cmap=cmap, norm=norm, 
                  extend = extend_colorbar)   
     else:
@@ -171,6 +170,11 @@ def interp_pressure_level(ncfile,level, field, pressure):
     return interpolated
 #%%
 def make_plots(wrf_vars,v):
+    global totprec_h
+    global totprec_3h
+    global totprec_6h
+    global totprec_12h
+    global totprec_24h
     logger.info('Processing variable: {}\n'.format(v))
     #defaults
     contour = False
@@ -216,7 +220,7 @@ def make_plots(wrf_vars,v):
            levels_tag2 = wrf_vars[v]['levels_tag2']
 
         figurename = out_path + '/' + domain +'_' + levels_tag+forecast_step +".png"
-    else if plot_type == 'lev': #pressurelevels
+    elif plot_type == 'lev': #pressurelevels
         pressure_level = wrf_vars[v]['pressure_level']
         pressure = getvar(ncfile,'pres', timeidx = timeindex, units='hPa')
 
@@ -255,34 +259,32 @@ def make_plots(wrf_vars,v):
     if v == 'slp':
         wrfv = smooth2d(wrfv,3, cenweight=4)
     
-    # Create the figures
-    #mean sea level pressure
-    title1 = wrf_vars[v]['title']
-    title2 = string_date_init + "\n" + string_date_forecast
-    title = title1 + "\n" + title2
-    print('WWWWWWWWWWWWWw '+title1)
-    plot_map(levels_tag = levels_tag,
-             field_fill = wrfv,
-             cart_proj = cart_proj,
-             lons = lons,
-             lats = lats,
-             string_date_init = string_date_init,
-             string_date_forecast = string_date_forecast, 
-             title = title, 
-             colormap = plot_colormap, 
-             figurename = figurename,
-             levels_tag2 = levels_tag2,
-             field_contour = wrfv2,
-             u_wind = ua,
-             v_wind = va,
-             ws = ws,
-             contour = contour,
-             windvectors = windvectors,
-             overlap_fields = overlap_fields)
-    del(wrfv)
-    
-    #precipitation sprocessed separately
-    if plot_type == 'prec': 
+    print('XXXXXXXXXXXXXXX ',plot_type)
+    if plot_type != 'prec': 
+        # Create the figures except precipitation
+        title1 = wrf_vars[v]['title']
+        title2 = string_date_init + "\n" + string_date_forecast
+        title = title1 + "\n" + title2
+        plot_map(levels_tag = levels_tag,
+                 field_fill = wrfv,
+                 cart_proj = cart_proj,
+                 lons = lons,
+                 lats = lats,
+                 string_date_init = string_date_init,
+                 string_date_forecast = string_date_forecast, 
+                 title = title, 
+                 colormap = plot_colormap, 
+                 figurename = figurename,
+                 levels_tag2 = levels_tag2,
+                 field_contour = wrfv2,
+                 u_wind = ua,
+                 v_wind = va,
+                 ws = ws,
+                 contour = contour,
+                 windvectors = windvectors,
+                 overlap_fields = overlap_fields)
+        del(wrfv)
+    else:  # type = prec
         totprec_h = getvar(ncfile, 'PREC_ACC_NC', timeidx=timeindex) + \
                     getvar(ncfile, 'PREC_ACC_C', timeidx=timeindex)
         totprec_3h = totprec_3h + totprec_h
@@ -293,7 +295,7 @@ def make_plots(wrf_vars,v):
         title2 = string_date_init + "\n" + string_date_forecast
         title = title1 + "\n" + title2
         if timeindex % 3 == 0:
-            if wrf_vars[v]['levels_tag'] == '3hourly_prec'
+            if wrf_vars[v]['levels_tag'] == '3hourly_prec':
                 figurename = out_path + '/' + domain +'_' + levels_tag + \
                              forecast_step +".png"
                 plot_map(levels_tag = levels_tag,
@@ -315,7 +317,7 @@ def make_plots(wrf_vars,v):
                          windvectors = False,
                          overlap_fields =False)
         if timeindex % 6 == 0:
-            if wrf_vars[v]['levels_tag'] == '6hourly_prec'
+            if wrf_vars[v]['levels_tag'] == '6hourly_prec':
                 figurename = out_path + '/' + domain +'_' + levels_tag + \
                              forecast_step +".png"
                 plot_map(levels_tag = levels_tag,
@@ -337,7 +339,7 @@ def make_plots(wrf_vars,v):
                          windvectors = False,
                          overlap_fields =False)
         if timeindex % 12 == 0:
-            if wrf_vars[v]['levels_tag'] == '12hourly_prec'
+            if wrf_vars[v]['levels_tag'] == '12hourly_prec':
                 figurename = out_path + '/' + domain +'_' + levels_tag + \
                              forecast_step +".png"
                 plot_map(levels_tag = levels_tag,
@@ -359,7 +361,7 @@ def make_plots(wrf_vars,v):
                          windvectors = False,
                          overlap_fields =False)
         if timeindex % 24 == 0:
-            if wrf_vars[v]['levels_tag'] == '24hourly_prec'
+            if wrf_vars[v]['levels_tag'] == '24hourly_prec':
                 figurename = out_path + '/' + domain +'_' + levels_tag + \
                              forecast_step +".png"
                 plot_map(levels_tag = levels_tag,
@@ -380,7 +382,7 @@ def make_plots(wrf_vars,v):
                          contour = False,
                          windvectors = False,
                          overlap_fields =False)
-   del(wrfv) 
+    #del(wrfv) 
 
 #%%
 #debug
