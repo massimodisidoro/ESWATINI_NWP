@@ -197,28 +197,27 @@ def make_plots(wrf_vars,v):
     plot_colormap = wrf_vars[v]['colormap']
     windvectors = wrf_vars[v]['windvectors']
     overlap_fields = wrf_vars[v]['overlap_fields']
-    #print(plot_type,contour,plot_colormap,windvectors)
+    print(plot_type,contour,plot_colormap,windvectors)
    
    
     if plot_type == 'surf':
-        if overlap_fields:
-           wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
-           wrfv2 = getvar(ncfile, wrf_vars[v]['wrf_name2'], timeidx = timeindex)
-           varname = wrf_vars[v]['varname']
-           varname_additional = wrf_vars[v]['varname_additional']
-        else:
-           wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
-           varname = wrf_vars[v]['varname']
-           wrfv2 = 'none'
-           varname_additional = 'none'
-
         if windvectors:
            ua = getvar(ncfile, "U10", timeidx=timeindex)
            va = getvar(ncfile, "V10", timeidx=timeindex)
            ws = getvar(ncfile, "wspd_wdir10",timeidx=timeindex)[0,:]
            varname = wrf_vars[v]['varname']
            varname_additional = wrf_vars[v]['varname_additional']
-
+        else:
+           if overlap_fields:
+              wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
+              wrfv2 = getvar(ncfile, wrf_vars[v]['wrf_name2'], timeidx = timeindex)
+              varname = wrf_vars[v]['varname']
+              varname_additional = wrf_vars[v]['varname_additional']
+           else:
+              wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
+              varname = wrf_vars[v]['varname']
+              wrfv2 = 'none'
+              varname_additional = 'none'
         figurename = out_path + '/' + domain +'_' + varname+forecast_step +".png"
     elif plot_type == 'lev': #pressurelevels
         pressure_level = wrf_vars[v]['pressure_level']
@@ -507,7 +506,7 @@ totprec_3h = 0
 totprec_6h = 0
 totprec_12h = 0
 totprec_24h = 0
-for timeindex in range(start_step,end_step+1,1):
+for timeindex in range(start_step,end_step+1,deltastep):
     forecast_step = "+" + str(timeindex)
     timeforecast = pd.to_datetime(str(wrf_time[timeindex]))
     day_forecast = timeforecast.strftime("%a")

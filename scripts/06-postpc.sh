@@ -31,7 +31,7 @@ domain="d02"
 post_out=$dir_web/$domain
 mkdir -p $post_out
 $python $dir_post/plot_skewt.py $filewrf2 --start 6 --end $end_step --deltastep 6 --lat -26.315 --lon 31.133 --profilename 'Mbabane' --out $post_out
-$python $dir_post/plot_figures.py $filewrf2 --start 6 --end $end_step --out $post_out
+$python $dir_post/plot_figures.py $filewrf2 --start 6 --end $end_step --out $post_out --config $dir_post/var.yaml --deltastep 3
 
 fig_meteo_archive=$dir_archive/$date_forecast/figures/$domain
 mkdir -p $fig_meteo_archive
@@ -61,7 +61,7 @@ $dir_script/crea_zip.sh $date_forecast
 #post_out=$dir_web/$domain
 #mkdir -p $post_out
 #$python $dir_post/plot_skewt.py $filewrf1 --start 6 --end $end_step --deltastep 6 --lat -26.315 --lon 31.133 --profilename 'Mbabane' --out $post_out
-#$python $dir_post/plot_figures.py $filewrf1 --start 6 --end $end_step --out $post_out
+#$python $dir_post/plot_figures.py $filewrf1 --start 6 --end $end_step --out $post_out --config $dir_post/vars.yaml --deltastep 3
 #
 #fig_meteo_archive=$dir_archive/$date_forecast/figures/$domain
 #mkdir -p $fig_meteo_archive
