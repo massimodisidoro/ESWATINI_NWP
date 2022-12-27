@@ -15,7 +15,7 @@ mkdir -p $logdir
 mkdir -p $dir_tmp
 
 run_hours=$forecast_length
-ts_buffer=`echo "scale=0; 6 * 60 * 3600 / $wrf_timestep"|bc` # every 6 hours updates timeseries
+ts_buffer=`echo "scale=0; 6 * 3600 / $wrf_timestep"|bc` # every 6 hours updates timeseries
 frames_wrfout=`echo "scale=0; $run_hours +1"|bc`
 
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
@@ -53,6 +53,7 @@ ln -sf $dir_geogrid_files/* .
 cat namelist.input.tpl | \
 sed "s/@@ts_buf_size@@/${ts_buffer}/g" | \
 sed "s/@@wrf_timestep@@/${wrf_timestep}/g" | \
+sed "s/@@adaptive_timestep@@/${adaptive_timestep}/g" | \
 sed "s/@@frames_wrfout@@/${frames_wrfout}/g" | \
 sed "s/yyyy1/${yyyy1}/g" | \
 sed "s/mm1/${mm1}/g" | \
