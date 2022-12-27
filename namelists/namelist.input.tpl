@@ -33,7 +33,7 @@
 time_step                = @@wrf_timestep@@,
 time_step_fract_num      = 0,
 time_step_fract_den      = 1,
-use_adaptive_time_step   = .false.
+use_adaptive_time_step   = @@adaptive_timestep@@,
 step_to_output_time      = .true.
 max_dom                  = 2,
 s_we                     = 1,        1,
@@ -50,7 +50,7 @@ parent_id                = 1,        1,
 i_parent_start           = 1,       74,
 j_parent_start           = 1,       69,
 parent_grid_ratio        = 1,        5,
-parent_time_step_ratio   = 1,        5,
+parent_time_step_ratio   = 1,        6,
 feedback                 = 1,
 smooth_option            = 0,
 max_ts_locs              = 5,    
