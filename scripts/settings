@@ -21,8 +21,6 @@ export cpu_omp=2
 
 export dir_root="/gporq3/minni/minniusers/disidoro/ESWATINI"
 
-export dir_tmp="$dir_root/scratch"
-export dir_log="$dir_root/scratch/log"
 
 
 export dir_master="$dir_root/ESWATINI_NWP"
@@ -49,21 +47,26 @@ export dir_web="/afs/enea.it/bol/user/disidoro/public/enwp"
 export project_name="ESWATINI_NWP"
 
 export gfs_res=0p50 #0p50 0p25
-export gfs_reference_time=00 # change to 18 if starting at 18Z day-1
 
-export start_hour_forecast=00 # change to 18 if starting at 18Z day-1
-export end_hour_forecast=00
+# set init hour forecast depending on day time.
+# according to day time the correspondent gfs forecast is selected
+hour=`date -u +%H`
+if [[ ${hour#0} -gt "00" ]];then
+  export gfs_reference_time=00
+elif [[ ${hour#0} -gt "12" ]];then
+  export gfs_reference_time=12
+fi
 
-# number of forecast days
-export forecast_length=72  #forecast length in hours (at least 24h!)
+export start_hour_forecast=$gfs_reference_time 
+# out and log folders, depend on gfs_reference time
+# so that different folders for different forecasts
+export dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+export dir_log="$dir_tmp/log"
+
+
+#forecast length in hours
+export forecast_length=60  # forecast length in hours (at least 24h!)
 export wrf_timestep=30 #model timestep in seconds
-export adaptive_timestep=false # USE true if model numerics fails too often
+export adaptive_timestep=true # if true wrf_timestep is overrided
+export met_em_freq=3 #hours between met_em files
 
-
-# starting time of meteo forecast needed to check if all met_em files
-# were produced. If met_em frequency will be changed in the future
-#export starting_time_meteo=18 
-
-# time frequency (hours) of met_em WRF files (needed to check met_em
-# production in check_premet_wrf.bsh)
-export met_em_freq=3

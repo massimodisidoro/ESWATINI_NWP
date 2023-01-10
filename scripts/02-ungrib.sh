@@ -1,7 +1,7 @@
 #!/bin/bash
 # script preparing file for wrf preprocessor.
 # essentially launches the ungrib tool
-set -x
+#set -x
 
 source settings
 
@@ -21,8 +21,10 @@ date_gfs=`date -d "$date_forecast " +%Y%m%d`
 run_hours=$forecast_length
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
+
 start_hour=$start_hour_forecast
-end_hour=$end_hour_forecast
+#end_hour=$end_hour_forecast
+end_hour=`date -d "$date_forecast + $run_hours hour" +%H`
 
 #formate dates for wrf WPS namelist
 yyyy=`echo $date_forecast |cut -c 1-4`

@@ -13,6 +13,6 @@ mkdir -p $logdir
 
 cd $dir_script  # senno' non funzione source ./env_vars dentro agli sctipts
 
-bsub -q $queue_name_scalar -o $logdir/log_06-postpc_${data}.out -e $logdir/log_06-postpc_${data}.err ./06-postpc.sh $data
+#bsub -q $queue_name_scalar -o $logdir/log_06-postpc_${data}.out -e $logdir/log_06-postpc_${data}.err ./06-postpc.sh $data
+$dir_script/06-postpc.sh $data &> $logdir/log_06-postpc_${data}.log 
 
-#$dir_script/crea_zip.sh $date &> $logdir/07_log_crea_zip_$data

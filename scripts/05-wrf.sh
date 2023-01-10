@@ -28,7 +28,8 @@ hh1=$start_hour_forecast
 yyyy2=`echo $end_date |cut -c 1-4`
 mm2=`echo $end_date |cut -c 5-6`
 dd2=`echo $end_date |cut -c 7-8`
-hh2=$end_hour_forecast
+#hh2=$end_hour_forecast
+hh2=`date -d "$date_forecast + $run_hours hour" +%H`
 
 
 

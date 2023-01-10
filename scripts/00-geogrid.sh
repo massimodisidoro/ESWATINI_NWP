@@ -18,7 +18,8 @@ run_hours=$forecast_length
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
 start_hour=$start_hour_forecast
-end_hour=$end_hour_forecast
+#end_hour=$end_hour_forecast
+end_hour=`date -d "$date_forecast + $run_hours hour" +%H`
 
 
 yyyy=`echo $date_forecast |cut -c 1-4`
