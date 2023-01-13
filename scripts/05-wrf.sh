@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#set -x
 source settings
 
 date_forecast=$1
@@ -15,11 +16,11 @@ mkdir -p $logdir/wrflog
 mkdir -p $dir_tmp
 
 run_hours=$forecast_length
-ts_buffer=`echo "scale=0; 6 * 3600 / $wrf_timestep"|bc` # every 6 hours updates timeseries
+ts_buffer=`echo "scale=0; 6 * 3600 / $wrf_timestep"|bc` # every 6 hours dumps  timeseries buffer to file
 frames_wrfout=`echo "scale=0; $run_hours +1"|bc`
 end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
-#formate dates for wrf WRF namelist
+#format initial and end dates for wrf WRF namelist
 yyyy1=`echo $date_forecast |cut -c 1-4`
 mm1=`echo $date_forecast |cut -c 5-6`
 dd1=`echo $date_forecast |cut -c 7-8`
@@ -28,13 +29,11 @@ hh1=$start_hour_forecast
 yyyy2=`echo $end_date |cut -c 1-4`
 mm2=`echo $end_date |cut -c 5-6`
 dd2=`echo $end_date |cut -c 7-8`
-#hh2=$end_hour_forecast
 hh2=`date -d "$date_forecast + $run_hours hour" +%H`
 
 
-
 cp $dir_namelist/namelist.input.tpl $dir_tmp
-cp $dir_namelist/tslist $dir_tmp
+cp $dir_post/tslist $dir_tmp
 
 cd $dir_tmp
 
@@ -62,31 +61,7 @@ ln -sf $dir_wrf_lookup_tables/ozone_lat.formatted
 ln -sf $dir_wrf_lookup_tables/ozone_plev.formatted
 ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio
 
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.A1B
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.A2
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.RCP4.5
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.RCP6
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.RCP8.5
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP119
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP126
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP245
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP370
-#ln -sf $dir_wrf_lookup_tables/CAMtr_volume_mixing_ratio.SSP585
-
-
-
-#ln -sf $dir_wrf_lookup_tables/grib* .
-#ln -sf $dir_wrf_lookup_tables/bulk* .
-#ln -sf $dir_wrf_lookup_tables/C* .
-#ln -sf $dir_wrf_lookup_tables/*.asc .
-#ln -sf $dir_wrf_lookup_tables/kernels.asc_s_0_03_0_9 .
-#ln -sf $dir_wrf_lookup_tables/ETAMPNEW_DATA .
-#ln -sf $dir_wrf_lookup_tables/ETAMPNEW_DATA.expanded_rain .
-#ln -sf $dir_wrf_lookup_tables/MPTABLE.TBL .
-#ln -sf $dir_wrf_lookup_tables/URBPARM.TBL .
-#ln -sf $dir_wrf_lookup_tables/tr* .
-#ln -sf $dir_wrf_lookup_tables/p3_lookupTable* .
-
+# build the namelist.input from template
 cat namelist.input.tpl | \
 sed "s/@@ts_buf_size@@/${ts_buffer}/g" | \
 sed "s/@@wrf_timestep@@/${wrf_timestep}/g" | \
@@ -102,6 +77,8 @@ sed "s/dd2/${dd2}/g" | \
 sed "s/hh2/${hh2}/g" >  namelist.input
 
 #prepare script for wrf run
+# to be modified on Eswatini HPC as_ mpirun -n ncores --hostfile hosts.txt
+# where hosts.txt will contain the names oh the 4 nodes
 script_wrf=script_wrf.exe
 echo '#!/bin/sh' > $script_wrf
 echo "date=$date_forecast" >>$script_wrf

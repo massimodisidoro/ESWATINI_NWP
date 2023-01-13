@@ -1,9 +1,10 @@
 library("optparse")
+source("./function_scale_individual_facet_y_axes.R")
 
 option_list = list(
     make_option(c("-p", "--pathin"), type="character", default=NULL, 
              help="path of input .TS files", metavar="character"),
-    make_option(c("-d", "--date_forecast"), type="character", default=NULL, 
+    make_option(c("-d", "--date_forecast, format=yyyymmddhh"), type="character", default=NULL, 
              help="date_forecast", metavar="character"),
     make_option(c("-o", "--out"), type="character", default="./", 
              help="output [default= %default]", metavar="character")
@@ -20,34 +21,6 @@ if (is.null(opt$pathin)|| is.null(opt$date_forecast)){
   stop("At least path of *.TS files and date_forecast arguments must be supplied (--pathin --date_forecast)", call.=FALSE)
 }
 
-scale_inidividual_facet_y_axes = function(plot, ylims) {
-  init_scales_orig = plot$facet$init_scales
-
-  init_scales_new = function(...) {
-    r = init_scales_orig(...)
-    # Extract the Y Scale Limits
-    y = r$y
-    # If this is not the y axis, then return the original values
-    if(is.null(y)) return(r)
-    # If these are the y axis limits, then we iterate over them, replacing them as specified by our ylims parameter
-    for (i in seq(1, length(y))) {
-      ylim = ylims[[i]]
-      if(!is.null(ylim)) {
-        y[[i]]$limits = ylim
-      }
-    }
-    # Now we reattach the modified Y axis limit list to the original return object
-    r$y = y
-    return(r)
-  }
-
-  plot$facet$init_scales = init_scales_new
-
-  return(plot)
-}
-
-
-
 
 
 date_forecast_char <- opt$date_forecast
@@ -58,6 +31,12 @@ pathout <- opt$out
 library(tidyverse)
 library(plyr)
 
+length <- str_length(date_forecast_char)
+if (length != 10){
+   message <- paste("date_forecast ",date_forecast_char," not in format yyyymmddhh. STOP", sep=" ")
+   stop(message)
+}
+
 
 files <- list.files(path = pathin , pattern = "d02.TS")
 for (filein in  files) {
@@ -65,7 +44,7 @@ for (filein in  files) {
    filein <- paste(pathin,filein,sep="/") 
    print(filein)
 
-   date_forecast <- lubridate::as_datetime(date_forecast_char)
+   date_forecast <- lubridate::as_datetime(date_forecast_char,format="%Y%m%d%H")
    day = format.Date(date_forecast, "%d")
    year = format.Date(date_forecast, "%Y")
    month = format.Date(date_forecast, "%m")
@@ -74,7 +53,7 @@ for (filein in  files) {
    # chech if date in filein is the same as date_forecast required 
    first_line <- readLines(filein,n=1)
    if(!str_detect(first_line,check_string)) {
-      message <- paste("input file ", filein,"doesn't match date_forecast ",date_forecast," STOP", sep=" ")
+      message <- paste("input file ", filein,"doesn't match date_forecast ",check_string," STOP", sep=" ")
    stop(message)
    }
 
@@ -83,7 +62,8 @@ for (filein in  files) {
    # is the grid id number.
    date_string <- paste0(as.character(year),"-",as.character(month),"-",as.character(day)," ",as.character(hour),"UTC")
    site_long_name <- str_trim(sub(" 2.*", "", first_line))
-   fig_title <- paste0("Meteogram ",site_long_name,". Forecast init: ",date_string) 
+   #fig_title <- paste0(site_long_name,"\n","Forecast init: ",date_string) 
+   fig_title <- paste0("Forecast_init: ",date_string,"\n",site_long_name)
 
    dati <- readr::read_table(filein,
                       skip=1,
@@ -150,7 +130,6 @@ for (filein in  files) {
                                  "ws_mean" = "10 m wind speed (m/s)"))
    p <- ggplot(dati_longer, aes(x=date, y=value)) + 
      labs(y="",title=fig_title)+
-     #scale_x_datetime(date_labels = "%b %d %HUTC ",
      scale_x_datetime(date_labels = "%m/%d %HUTC ",
                       date_breaks = "6 hour", 
                       date_minor_breaks = "3 hour",

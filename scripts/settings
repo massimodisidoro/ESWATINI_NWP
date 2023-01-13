@@ -40,7 +40,7 @@ export dir_wrf_lookup_tables="$dir_wrf_code/run"
 
 
 export dir_archive="$dir_root/OUT_ARCHIVE"
-export dir_web="/afs/enea.it/bol/user/disidoro/public/enwp"
+export dir_post_out="/afs/enea.it/bol/user/disidoro/public/enwp"
 
 
 
@@ -48,14 +48,22 @@ export project_name="ESWATINI_NWP"
 
 export gfs_res=0p50 #0p50 0p25
 
+###
 # set init hour forecast depending on day time.
 # according to day time the correspondent gfs forecast is selected
 hour=`date -u +%H`
-if [[ ${hour#0} -gt "00" ]];then
-  export gfs_reference_time=00
-elif [[ ${hour#0} -gt "12" ]];then
-  export gfs_reference_time=12
+if [[ ${hour#0} -ge "00" ]];then
+  export time=00
 fi
+if [[ ${hour#0} -ge "12" ]];then
+  export time=12
+fi
+gfs_reference_time=$time
+#gfs_reference_time=00
+echo "!!! gfs_reference_time set to $gfs_reference_time !!!"
+echo "if needed, manually change its value inside $dir_script/settings file"
+###
+###
 
 export start_hour_forecast=$gfs_reference_time 
 # out and log folders, depend on gfs_reference time
@@ -67,6 +75,5 @@ export dir_log="$dir_tmp/log"
 #forecast length in hours
 export forecast_length=60  # forecast length in hours (at least 24h!)
 export wrf_timestep=30 #model timestep in seconds
-export adaptive_timestep=true # if true wrf_timestep is overrided
+export adaptive_timestep=true # if true wrf_timestep is overrided (more stable)
 export met_em_freq=3 #hours between met_em files
-

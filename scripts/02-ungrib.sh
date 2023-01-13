@@ -1,7 +1,6 @@
 #!/bin/bash
 # script preparing file for wrf preprocessor.
 # essentially launches the ungrib tool
-#set -x
 
 source settings
 
@@ -23,7 +22,6 @@ end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 
 
 start_hour=$start_hour_forecast
-#end_hour=$end_hour_forecast
 end_hour=`date -d "$date_forecast + $run_hours hour" +%H`
 
 #formate dates for wrf WPS namelist
@@ -56,15 +54,6 @@ sed "s/@@start_date@@/${new_fmt_start_date}/g" | \
 sed "s/@@start_hour@@/${start_hour}/g" | \
 sed "s/@@end_date@@/${new_fmt_end_date}/g" | \
 sed "s/@@end_hour@@/${end_hour}/g"  > namelist.wps
-
-
-#cleaning
-#rm -f GRIBFILE.*
-#date=$new_fmt_date_forecast
-#while [[ $date != $new_fmt_end_date ]];do
-#rm -f FILE*{$date}*
-#date=`date -d "$date + 1 day" +%Y-%m-%d`
-#done
 
 datesst=`date -d "$date_gfs -1 day" +%Y%m%d`
 ln -fs $dir_input_sst/${datesst}/* $dir_grib/

@@ -13,6 +13,5 @@ mkdir -p $logdir
 
 cd $dir_script  # senno' non funzione source ./env_vars dentro agli sctipts
 
-
-bsub -q $queue_name_scalar -o $logdir/log_04-real_${data}.out -e $logdir/log_04-real_${data}.err ./04-real.sh $data
+./04-real.sh $data &> $logdir/log_04-real_${data}.out
 

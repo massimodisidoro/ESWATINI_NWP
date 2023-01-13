@@ -13,7 +13,5 @@ mkdir -p $logdir
 
 cd $dir_script  # senno' non funzione source ./env_vars dentro agli sctipts
 
-#./03-metgrid.sh $data &>  $logdir/log_03-metgrid_${data}.log
-
-bsub -q $queue_name_scalar -o $logdir/log_03-metgrid_${data}.out -e $logdir/log_03-metgrid_${data}.err ./03-metgrid.sh $data
+./03-metgrid.sh $data &>  $logdir/log_03-metgrid_${data}.log
 
