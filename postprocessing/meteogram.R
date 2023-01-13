@@ -1,5 +1,4 @@
 library("optparse")
-source("./function_scale_individual_facet_y_axes.R")
 
 option_list = list(
     make_option(c("-p", "--pathin"), type="character", default=NULL, 
@@ -30,6 +29,35 @@ pathout <- opt$out
 
 library(tidyverse)
 library(plyr)
+
+
+# 
+scale_inidividual_facet_y_axes = function(plot, ylims) {
+  init_scales_orig = plot$facet$init_scales
+  
+  init_scales_new = function(...) {
+    r = init_scales_orig(...)
+    # Extract the Y Scale Limits
+    y = r$y
+    # If this is not the y axis, then return the original values
+    if(is.null(y)) return(r)
+    # If these are the y axis limits, then we iterate over them, replacing them as specified by our ylims parameter
+    for (i in seq(1, length(y))) {
+      ylim = ylims[[i]]
+      if(!is.null(ylim)) {
+        y[[i]]$limits = ylim
+      }
+    }
+    # Now we reattach the modified Y axis limit list to the original return object
+    r$y = y
+    return(r)
+  }
+  
+  plot$facet$init_scales = init_scales_new
+  
+  return(plot)
+}
+#
 
 length <- str_length(date_forecast_char)
 if (length != 10){
