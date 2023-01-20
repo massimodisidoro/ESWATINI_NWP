@@ -1,16 +1,27 @@
-#!/usr/bin/pagsh
-/usr/bin/kinit -k -t /etc/eswatini/keytab.aqforecast aqforecast
-/usr/bin/aklog
+#!/usr/bin/bash
 
-source /etc/profile.d/modules.sh
-. /afs/enea.it/profile/common/profile
-source /etc/eswatini/settings
+source /home/enwp/forecast_system/ESWATINI_NWP/scripts/settings
 
-data=`date +%Y%m%d`
-logdir=$dir_log/$data
+date_forecast=`date +%Y%m%d`
+#trick to choose between gfs_reference_time 00 and 12
+# comparing the current hour: ig it is > 0 and < 12 then set to 00
+# otherwise set to 12
+hour=`date -u +%H`
+if [[ ${hour#0} -ge "00" ]];then 
+  export time=00
+fi
+if [[ ${hour#0} -ge "12" ]];then
+  export time=12
+fi
+gfs_reference_time=$time
+
+dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+dir_log="$dir_tmp/log"
+
+
+logdir=$dir_log/$date_forecast
 mkdir -p $logdir
 
-cd $dir_script  # senno' non funzione source ./env_vars dentro agli sctipts
+cd $dir_script 
 
-$dir_script/01-download_gfs.sh &> $logdir/log_01-download_gfs_${data}.txt
-
+$dir_script/01-download_gfs.sh $date_forecast $gfs_reference_time

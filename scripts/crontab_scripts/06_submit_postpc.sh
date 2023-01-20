@@ -1,18 +1,27 @@
-#!/usr/bin/pagsh
-/usr/bin/kinit -k -t /etc/eswatini/keytab.aqforecast aqforecast
-/usr/bin/aklog
+#!/usr/bin/bash
+source /home/enwp/.bashrc
+source /home/enwp/forecast_system/ESWATINI_NWP/scripts/settings
 
-source /etc/profile.d/modules.sh
-. /afs/enea.it/profile/common/profile
-source /etc/eswatini/settings
+date_forecast=`date +%Y%m%d`
+#trick to choose between gfs_reference_time 00 and 12
+# comparing the current hour: ig it is > 0 and < 12 then set to 00
+# otherwise set to 12
+hour=`date -u +%H`
+if [[ ${hour#0} -ge "00" ]];then
+  export time=00
+fi
+if [[ ${hour#0} -ge "12" ]];then
+  export time=12
+fi
+gfs_reference_time=$time
 
-echo "POSTPC STARTING..."
-data=`date +%Y%m%d`
+dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+dir_log="$dir_tmp/log"
+
 logdir=$dir_log/$data
 mkdir -p $logdir
 
-cd $dir_script  # senno' non funzione source ./env_vars dentro agli sctipts
+cd $dir_script  
 
-#bsub -q $queue_name_scalar -o $logdir/log_06-postpc_${data}.out -e $logdir/log_06-postpc_${data}.err ./06-postpc.sh $data
-$dir_script/06-postpc.sh $data &> $logdir/log_06-postpc_${data}.log 
+$dir_script/06-postpc.sh $date_forecast $gfs_reference_time
 

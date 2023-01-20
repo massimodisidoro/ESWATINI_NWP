@@ -1,27 +1,18 @@
 #!/usr/bin/bash
 
 
-
-#per far trovare module alla VM
-export MODULEPATH=$MODULEPATH:/afs/enea.it/bol/user/disidoro/MyModules/
-
-export python=/gporq3/minni/minniusers/disidoro/anaconda3/envs/wrf-python/bin/python
-
-module() { eval `/usr/bin/modulecmd sh $*`; }
+#python path (from anaconda installation)
+export python=/home/enwp/forecast_system/libs/anaconda3/wrf-python/bin/python
 
 
-export module="gfortran_cr6"
-module load $module
 
-export queue_name_scalar=forair_h4
-export queue_name_parallel=forair_48h24
-export nprocs_wrf=336 
-export nprocs_metgrid=48 
-export cpu_omp=2
+export omp_wps_threads=2 
+export nprocs_wrf=48  #192
+export omp_wrf_threads=2
 
-export dir_root="/gporq3/minni/minniusers/disidoro/ESWATINI"
-
-
+#once establishd the $root_dir, al other folders are automatically defined
+# we establish the forecast system is under /home/enwp/forecast_system/ :
+export dir_root="/home/enwp/forecast_system/"
 
 export dir_master="$dir_root/ESWATINI_NWP"
 export dir_wrf_code="$dir_root/wrf_code/WRF-4.2.2"
@@ -32,7 +23,6 @@ export dir_post="$dir_master/postprocessing"
 
 export dir_input="$dir_root/INPUT"
 export dir_geogrid_files="$dir_input/geogrid_files"
-export dir_metgrid_files="$dir_tmp"
 export dir_input_meteo="$dir_input/gfs"
 export dir_input_sst="$dir_input/sst"
 export dir_wrf_static_data="$dir_root/wrf_static_data"
@@ -40,40 +30,19 @@ export dir_wrf_lookup_tables="$dir_wrf_code/run"
 
 
 export dir_archive="$dir_root/OUT_ARCHIVE"
-export dir_post_out="/afs/enea.it/bol/user/disidoro/public/enwp"
 
-
-
-export project_name="ESWATINI_NWP"
-
-export gfs_res=0p50 #0p50 0p25
-
-###
-# set init hour forecast depending on day time.
-# according to day time the correspondent gfs forecast is selected
-hour=`date -u +%H`
-if [[ ${hour#0} -ge "00" ]];then
-  export time=00
-fi
-if [[ ${hour#0} -ge "12" ]];then
-  export time=12
-fi
-gfs_reference_time=$time
-#gfs_reference_time=00
-echo "!!! gfs_reference_time set to $gfs_reference_time !!!"
-echo "if needed, manually change its value inside $dir_script/settings file"
-###
-###
-
-export start_hour_forecast=$gfs_reference_time 
-# out and log folders, depend on gfs_reference time
-# so that different folders for different forecasts
-export dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
-export dir_log="$dir_tmp/log"
-
+export gfs_res=0p50 #0p50 0p25  #gfs resolution fields in decimal defgrees
 
 #forecast length in hours
-export forecast_length=60  # forecast length in hours (at least 24h!)
+export forecast_length=48  # forecast length in hours (at least 24h!)
 export wrf_timestep=30 #model timestep in seconds
 export adaptive_timestep=true # if true wrf_timestep is overrided (more stable)
 export met_em_freq=3 #hours between met_em files
+
+# settings for graphical outputs
+# Note that maps are plotted starting at init_time +3 (model spin-up time)
+export deltastep_maps=3 # setp in hours for the maps to be produced
+# please, edit the tslist file in the directory:
+# /home/enwp/forecast_system/ESWATINI_NWP/postprocessing
+# to choose the geographcal points where meteograms and
+# profiled must be automatically produced in output

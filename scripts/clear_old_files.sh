@@ -2,6 +2,21 @@
 
 source settings
 days=5
+gfs_reference_time=$1
+
+if [[ $# -ne 1 ]];then
+  echo " gfs_reference_time in the format hh (e.g. 00, 12, ) "
+  echo "STOP"
+  exit
+fi
+
+
+dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+dir_log="$dir_tmp/log"
+dir_metgrid_files="$dir_tmp"
+mkdir -p $dir_tmp $dir_log $dir_metgrid_files
+
+
 
 
 echo "Start cleaning files older than $days days in:

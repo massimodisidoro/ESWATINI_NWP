@@ -22,7 +22,6 @@ dir_log="$dir_tmp/log"
 logdir=$dir_log/$data
 mkdir -p $logdir
 
-cd $dir_script 
+cd $dir_script  
 
-$dir_script/03-metgrid.sh $date_forecast $gfs_reference_time
-
+$dir_script/clear_scratch.sh $gfs_reference_time > $dir_log/clear_scratch_$date_forecast

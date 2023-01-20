@@ -3,11 +3,29 @@
 source settings
 
 date_forecast=$1
+gfs_reference_time=$2
+
+if [[ $# -ne 2 ]];then
+  echo " Please provide in argument:"
+  echo " date_forecast in the format yyyymmdd"
+  echo " gfs_reference_time in the format hh (e.g. 00, 12, ) "
+  echo " Example:   $0 20230119 12"
+  echo "STOP"
+  exit
+fi
+
+set -x
 
 if [[ -z $date_forecast ]];then
   date_forecast=`date +%Y%m%d`
   echo " date_forecast not provided, starting with $date_forecast"
 fi
+
+dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+dir_log="$dir_tmp/log"
+dir_metgrid_files="$dir_tmp"
+mkdir -p $dir_tmp $dir_log $dir_metgrid_files
+
 
 logdir=$dir_log/$date_forecast
 
@@ -25,7 +43,7 @@ end_date=`date -d "$date_forecast +$run_hours hours" +%Y%m%d`
 yyyy1=`echo $date_forecast |cut -c 1-4`
 mm1=`echo $date_forecast |cut -c 5-6`
 dd1=`echo $date_forecast |cut -c 7-8`
-hh1=$start_hour_forecast
+hh1=$gfs_reference_time
 
 yyyy2=`echo $end_date |cut -c 1-4`
 mm2=`echo $end_date |cut -c 5-6`
@@ -60,5 +78,5 @@ sed "s/hh2/${hh2}/g" >  namelist.input
 
 
 #launch
-./real.exe #&> $logdir/log_04_real_${date_forecast}.log
-
+export OMP_NUM_THREADS=$omp_wps_threads
+./real.exe &> $logdir/log_04_real_${date_forecast}.log

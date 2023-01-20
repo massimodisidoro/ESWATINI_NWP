@@ -3,15 +3,28 @@
 # and for all, unless domains are changed.
 
 
-#set -x
+set -x
 source settings
 
 date_forecast=$1
+gfs_reference_time=$2
+echo " Example:   $0 20230119 12"
+
 
 if [[ -z $date_forecast ]];then
-  echo "provide date_forecast (yyyymmdd)"
+  echo "provide date_forecast (yyyymmddhh)"
   exit
 fi
+if [[ -z $gfs_reference_time ]];then
+	echo "provide GFS run reference time (00, 12)"
+  exit
+fi
+
+dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+dir_log="$dir_tmp/log"
+dir_metgrid_files="$dir_tmp"
+mkdir -p $dir_tmp $dir_log $dir_metgrid_files
+
 
 #run_hours=$(( ndays*24 ))
 run_hours=$forecast_length

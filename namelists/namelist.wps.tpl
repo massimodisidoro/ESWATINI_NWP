@@ -29,7 +29,7 @@
  !
  !!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT NOTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!
  !
- geog_data_res = '10m','10m',
+ geog_data_res = 'default','default',
  dx = 5000,
  dy = 5000,
  map_proj =  'lambert',
