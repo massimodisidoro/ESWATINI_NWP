@@ -1,8 +1,12 @@
-- geogrid , metgrid and ungrib have been compiled from /home/enwp/forecast_system/wrf_code/WPS_4.2 and the executable copied here.
+- geogrid.exe , metgrid.exe and ungrib.exe have to be compiled from
+  /home/enwp/forecast_system/wrf_code/WPS_4.2 
 
-- real and wrf have been compiled from /home/enwp/forecast_system/wrf_code/WRF-4.2.2 and the executables copied here
+- real.exe and wrf.exe have to be compiled from
+  /home/enwp/forecast_system/wrf_code/WRF-4.2.2 
 
-- link_grib.csh copied from /home/enwp/forecast_system/wrf_code/WPS_4.2
+- link_grib.csh to be copied here from
+  /home/enwp/forecast_system/wrf_code/WPS_4.2
 
-- wgrib2 compiled and copied from /home/enwp/forecast_system/libs_src/wgrib2
+- wgrib2 to be compiled and copied here from
+  /home/enwp/forecast_system/libs_src/wgrib2
 
