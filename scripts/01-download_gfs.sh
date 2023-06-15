@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 
@@ -7,9 +7,6 @@
 
 
 source settings
-#set -x
-
-
 
 #ncep archive 
 path_gfs_ncep="https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/"
@@ -19,11 +16,26 @@ path_sst_ncep="https://nomads.ncep.noaa.gov/pub/data/nccf/com/nsst/prod/"
 #alternative archive: ftpprd (contains last 10 days gfs forecasts)
 #path_gfs_ncep="https://ftpprd.ncep.noaa.gov/data/nccf/com/gfs/prod/"
 
+date_forecast=$1
+gfs_reference_time=$2
 
-# if using date_forecast gfs (00Z)
-date_forecast=`date -d "$date" +%Y%m%d` 
+if [[ $# -ne 2 ]];then
+  echo " Please provide in argument:"
+  echo " date_forecast in the format yyyymmdd"
+  echo " gfs_reference_time in the format hh (e.g. 00, 12, ) "
+  echo "STOP"
+  exit
+fi
 
-#date_forecast=20220515
+if [[ -z $date_forecast ]];then
+  date_forecast=`date +%Y%m%d`
+  echo " date_forecast not provided, starting with $date_forecast"
+fi
+
+dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
+dir_log="$dir_archive/${date_forecast}_${gfs_reference_time}/log"
+dir_metgrid_files="$dir_tmp"
+mkdir -p $dir_tmp $dir_log $dir_metgrid_files
 
 
 # carefully check time scheduling, depending on what time the forecast
@@ -163,4 +175,3 @@ if [[ $count  -le $max_attempt ]]; then
 
 fi
 echo "CHECK  SST DATA OK"
-

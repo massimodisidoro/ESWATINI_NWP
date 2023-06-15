@@ -49,7 +49,7 @@ end_step = args.end
 out_path = args.out
 lon = args.lon
 lat = args.lat
-profilename = args.profilename
+profilename =args.profilename
 deltastep = args.deltastep
 
 
@@ -157,15 +157,14 @@ for timeindex in range(start_step, end_step,deltastep):
    # Add the relevant special lines
    skew.plot_dry_adiabats()
    skew.plot_moist_adiabats()
-   skew.plot_mixing_lines()
+   #skew.plot_mixing_lines()
    
  
 
    #create figure
    skew.ax.set_xlabel('Temperature ($^\circ$C)')
    skew.ax.set_ylabel('Pressure (hPa)')
-   #figurename = out_path +'/' + domain + '_skewt_'+ profilename + "_" + t1 + forecast_step +".png"
-   figurename = out_path +'/' + domain + '_skewt_'+ profilename + forecast_step +".png"
+   figurename = out_path +'/' + domain + '_skewt_'+ profilename.replace(" ", "_") + forecast_step +".png"
    print('plot name ' + figurename)
    title1 = 'Skew-T ' + profilename 
    title2 = string_date_init + "\n" + string_date_forecast

@@ -8,6 +8,7 @@ This is a temporary script file.
 from __future__ import print_function
 
 import argparse
+import numpy as np
 from def_vars import def_vars
 import pandas as pd 
 from netCDF4 import Dataset
@@ -129,14 +130,14 @@ def plot_map(varname,
               (16/255, 78/255, 139/255), 
               (30/255, 144/255, 1), 
               (0, 178/255, 238/255), 
-              (0, 238/255, 238/255),  #celeste 
+              (0, 238/255, 238/255),  
               (137/255, 104/255, 205/255), 
               (145/255, 44/255, 238/255), 
-              (139/255, 0, 139/255), # viola scuro
-              (1, 1, 0),#giallo
-              (1, 215/255, 0), #giallino
-              (1, 127/255, 0), #aranciuo
-              (238/255, 64/255, 0),  #rosso
+              (139/255, 0, 139/255), 
+              (1, 1, 0),
+              (1, 215/255, 0), 
+              (1, 127/255, 0), 
+              (238/255, 64/255, 0),  
               (205/255, 0, 0),
               (139/255, 0, 0)]
             colmap = mcolors.ListedColormap(cmap_data, 'custom_bar')
@@ -197,7 +198,7 @@ def make_plots(wrf_vars,v):
     plot_colormap = wrf_vars[v]['colormap']
     windvectors = wrf_vars[v]['windvectors']
     overlap_fields = wrf_vars[v]['overlap_fields']
-    print(plot_type,contour,plot_colormap,windvectors)
+    #print(plot_type,contour,plot_colormap,windvectors)
    
    
     if plot_type == 'surf':
@@ -214,7 +215,14 @@ def make_plots(wrf_vars,v):
               varname = wrf_vars[v]['varname']
               varname_additional = wrf_vars[v]['varname_additional']
            else:
-              wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
+              if wrf_vars[v]['wrf_name'] == 'cloudfrac':
+                 cloudfrac = getvar(ncfile,'cloudfrac', timeidx=timeindex)*100
+                 wrfv = np.amax(cloudfrac, axis=0)
+              elif wrf_vars[v]['wrf_name'] == 'cape':
+                 cape_2d = getvar(ncfile, "cape_2d", timeidx = timeindex)
+                 wrfv = cape_2d[0]
+              else:
+                 wrfv = getvar(ncfile, wrf_vars[v]['wrf_name'], timeidx = timeindex)
               varname = wrf_vars[v]['varname']
               wrfv2 = 'none'
               varname_additional = 'none'
@@ -408,12 +416,12 @@ def make_plots(wrf_vars,v):
 
 #%%
 #debug
-out_path='./'
-wrf_file='/home/massimo/tmp/eswatini/wrfout_d02_2022-12-20_00:00:00'
-start_step=2
-end_step=2
-deltastep =1
-config_file='var.yaml'
+#out_path='./'
+#wrf_file='/home/massimo/tmp/eswatini/wrfout_d02_2022-12-20_00:00:00'
+#start_step=2
+#end_step=2
+#deltastep =1
+#config_file='var.yaml'
 #%%
 parser=argparse.ArgumentParser()
 parser.add_argument("wrfout_file",
@@ -507,7 +515,7 @@ totprec_6h = 0
 totprec_12h = 0
 totprec_24h = 0
 for timeindex in range(start_step,end_step+1,deltastep):
-    forecast_step = "+" + str(timeindex)
+    forecast_step = "+" + str(timeindex).zfill(2)
     timeforecast = pd.to_datetime(str(wrf_time[timeindex]))
     day_forecast = timeforecast.strftime("%a")
     string_date_forecast = "Forecast Date: " + day_forecast + ", " + \

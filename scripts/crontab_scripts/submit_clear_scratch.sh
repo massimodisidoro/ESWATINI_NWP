@@ -15,10 +15,8 @@ if [[ ${hour#0} -ge "12" ]];then
 fi
 gfs_reference_time=$time
 
-dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
-dir_log="$dir_archive/${date_forecast}_${gfs_reference_time}/log"
-mkdir -p $dir_log
 
+mkdir -p $dir_archive/clearing
 cd $dir_script  
 
-$dir_script/05-wrf.sh $date_forecast $gfs_reference_time
+$dir_script/clear_scratch.sh $gfs_reference_time > $dir_archive/clearing/clear_scratch_$date_forecast
