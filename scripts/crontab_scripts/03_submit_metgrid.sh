@@ -18,7 +18,6 @@ gfs_reference_time=$time
 dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
 dir_log="$dir_archive/${date_forecast}_${gfs_reference_time}/log"
 
-cd $dir_script 
 
 mkdir -p $dir_log
 
