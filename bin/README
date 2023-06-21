@@ -18,4 +18,3 @@ wrf.exe
 - wgrib2 compiled and copied from /home/enwp/forecast_system/libs_src/wgrib2
 
 -rclone from https://downloads.rclone.org/v1.62.2/rclone-v1.62.2-linux-amd64.zip
-

@@ -23,4 +23,3 @@ mkdir -p $dir_log
 cd $dir_script  
 
 $dir_script/06-postpc.sh $date_forecast $gfs_reference_time &> $dir_log/log_06-postpc_${date_forecast}.log
-

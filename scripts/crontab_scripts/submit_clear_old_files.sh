@@ -1,12 +1,12 @@
 #!/usr/bin/bash
 source /home/enwp/.bashrc
-source /storage/forecast_system/ESWATINI_NWP/scripts/settings
+source /home/enwp/forecast_system/ESWATINI_NWP/scripts/settings
 
 date_forecast=`date +%Y%m%d`
 #trick to choose between gfs_reference_time 00 and 12
 # comparing the current hour: ig it is > 0 and < 12 then set to 00
 # otherwise set to 12
-hour=`date  +%H`
+hour=`date -u +%H`
 if [[ ${hour#0} -ge "00" ]];then
   export time=00
 fi
@@ -16,13 +16,11 @@ fi
 gfs_reference_time=$time
 
 dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
-dir_log="$dir_archive/${date_forecast}_${gfs_reference_time}/log"
+dir_log="$dir_tmp/log"
 
-cd $dir_script 
+logdir=$dir_log/$data
+mkdir -p $logdir
 
-mkdir -p $dir_log
+cd $dir_script  
 
-cd $dir_script 
-
-$dir_script/03-metgrid.sh $date_forecast $gfs_reference_time
-
+$dir_script/clear_old_files.sh $gfs_reference_time > $dir_log/clear_old_files_$date_forecast
