@@ -17,6 +17,7 @@ if [[ -z $date_forecast ]];then
   date_forecast=`date +%Y%m%d`
   echo " date_forecast not provided, starting with $date_forecast"
 fi
+date_forecastm1=`date -d "$date_forecast -1 day" +%Y%m%d`
 
 dir_tmp="$dir_root/scratch_${gfs_reference_time}UTC"
 dir_metgrid_files="$dir_tmp"
@@ -39,7 +40,7 @@ while [[ $count -le 90 ]];do
   if [[ $testme == "wrf: SUCCESS COMPLETE WRF" ]];then
     echo "WRF COMPLETED "
     pkill wrf.exe
-    sleep 5
+    sleep 10
     break
   fi
   sleep 60
@@ -56,7 +57,7 @@ if [[ ! -f $filewrf ]];then
 fi
 
 
-end_step=$(( forecast_length -1))
+end_step=$(( forecast_length +1))
 
 
 fig_meteo_archive=$dir_archive/${date_forecast}_${gfs_reference_time}/figures/
@@ -78,3 +79,21 @@ Rscript $dir_post/meteogram.R --pathin $dir_tmp --date_forecast ${date_forecast}
 #maps
 $python $dir_post/plot_figures.py $filewrf --start 3 --end $end_step --out $fig_meteo_archive --config $dir_post/var.yaml --deltastep $deltastep_maps
 
+
+#transfer plots to windows machine
+ #folder name on remote machine
+ folder=${date_forecast}_${gfs_reference_time}
+ yesterday_folder=${date_forecastm1}_$gfs_reference_time
+ # build list with files to be transferred
+ ls -1 $fig_meteo_archive > tmp.txt
+ #create remote folder where to copy files
+ rclone mkdir sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder
+ # copy files to remote folder
+ rclone copy $fig_meteo_archive sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder --include-from=tmp.txt
+ #remove remote folder containing yesterday forecasts
+ rclone purge sive_windows_machine:C:/Users/Met/Desktop/ENEA/$yesterday_folder
+
+#transfer test on enea  machine
+#rclone mkdir enea://gporq3/minni/minniusers/disidoro/tmp/$folder -vv
+#rclone copy $fig_meteo_archive enea:/gporq3/minni/minniusers/disidoro/tmp/$folder --include-from=tmp.txt -vv
+rm tmp.txt
