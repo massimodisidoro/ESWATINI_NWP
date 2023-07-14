@@ -35,7 +35,7 @@ def def_vars(varname):
         levels = np.arange(0, 110., 10.)
         extend_colorbar = 'neither'
     elif varname == 'w10m':
-        levels = np.arange(2, 22., 2.)
+        levels = np.arange(2, 40., 2.)
         extend_colorbar = 'both'
     elif varname == 'tcc':
         levels = np.arange(0, 100., 5.)
@@ -89,19 +89,19 @@ def def_vars(varname):
         levels = np.arange(-50, -40, 1)
         extend_colorbar = 'both'
     elif varname == 'w850':
-        levels = np.arange(2, 32, 2)
+        levels = np.arange(4, 64, 4)
         extend_colorbar = 'both'
     elif varname == 'w700':
-        levels = np.arange(2, 34, 3)
+        levels = np.arange(4, 68, 6)
         extend_colorbar = 'both'
     elif varname == 'w500':
-        levels = np.arange(2,40, 4)
+        levels = np.arange(4,80, 8)
         extend_colorbar = 'both'
     elif varname == 'w300':
-        levels = np.arange(5, 50, 5)
+        levels = np.arange(10, 100, 10)
         extend_colorbar = 'both'
     elif varname == 'w250':
-        levels = np.arange(10, 60, 5)
+        levels = np.arange(20, 120, 10)
         extend_colorbar = 'both'
     else:
         levels =np.arange(0, 30., 2.)

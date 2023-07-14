@@ -203,9 +203,9 @@ def make_plots(wrf_vars,v):
    
     if plot_type == 'surf':
         if windvectors:
-           ua = getvar(ncfile, "U10", timeidx=timeindex)
-           va = getvar(ncfile, "V10", timeidx=timeindex)
-           ws = getvar(ncfile, "wspd_wdir10",timeidx=timeindex)[0,:]
+           ua = getvar(ncfile, "U10", units="kt",timeidx=timeindex)
+           va = getvar(ncfile, "V10", units="kt",timeidx=timeindex)
+           ws = getvar(ncfile, "wspd_wdir10",units="kt",timeidx=timeindex)[0,:]
            varname = wrf_vars[v]['varname']
            varname_additional = wrf_vars[v]['varname_additional']
         else:
@@ -232,9 +232,9 @@ def make_plots(wrf_vars,v):
         pressure = getvar(ncfile,'pres', timeidx = timeindex, units='hPa')
 
         if windvectors:
-            ua = getvar(ncfile, "ua",timeidx=timeindex)
-            va = getvar(ncfile, "va",timeidx=timeindex)
-            ws = getvar(ncfile, "wspd_wdir",timeidx=timeindex)[0,:]
+            ua = getvar(ncfile, "ua",units="kt",timeidx=timeindex)
+            va = getvar(ncfile, "va",units="kt",timeidx=timeindex)
+            ws = getvar(ncfile, "wspd_wdir",units="kt",timeidx=timeindex)[0,:]
             ua = interp_pressure_level(ncfile,pressure_level,ua,pressure)
             va = interp_pressure_level(ncfile,pressure_level,va,pressure)
             ws = interp_pressure_level(ncfile,pressure_level,ws,pressure)
