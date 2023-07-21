@@ -192,7 +192,7 @@ def plot_map(varname,
     plt.title(title)
     plt.savefig(figurename, dpi=120, bbox_inches='tight')
     plt.close()
-    print('plotted ' + varname)
+    logger.info('plotted {}\n'.format(varname))
     
 
 #%%
@@ -201,12 +201,7 @@ def interp_pressure_level(ncfile,level, field, pressure):
     return interpolated
 #%%
 def make_plots(wrf_vars,v):
-    global totprec_h
-    global totprec_3h
-    global totprec_6h
-    global totprec_12h
-    global totprec_24h
-    logger.info('Variables to be processed: {}\n'.format(v))
+    logger.info('Variables to process: {}'.format(v))
     #defaults
     contour = False
     plot_colormap = "Turbo"
@@ -332,131 +327,9 @@ def make_plots(wrf_vars,v):
                  windvectors = windvectors,
                  overlap_fields = overlap_fields)
         del(wrfv)
-    else:  # type = prec
-        varname = wrf_vars[v]['varname']
-        totprec_h = getvar(ncfile, 'PREC_ACC_NC', timeidx=timeindex) + \
-                    getvar(ncfile, 'PREC_ACC_C', timeidx=timeindex)
-        totprec_3h = totprec_3h + totprec_h
-        totprec_6h = totprec_6h + totprec_h
-        totprec_12h = totprec_12h + totprec_h
-        totprec_24h = totprec_24h + totprec_h
-        title1 = wrf_vars[v]['title']
-        title2 = string_date_init + "\n" + string_date_forecast
-        title = title1 + "\n" + title2
-        if wrf_vars[v]['varname'] == 'hourly_prec':
-            figurename = out_path + '/' + domain +'_' + varname + \
-                        forecast_step +".png"
-            plot_map(varname = varname,
-                         field_fill =totprec_h,
-                         cart_proj = cart_proj,
-                         lons = lons,
-                         lats = lats,
-                         string_date_init = string_date_init,
-                         string_date_forecast = string_date_forecast,
-                         title = title,
-                         colormap = 'prec',
-                         figurename = figurename,
-                         varname_additional = 'none',
-                         field_contour = 'none',
-                         u_wind = 'none',
-                         v_wind = 'none',
-                         ws = 'none',
-                         contour = False,
-                         windvectors = False,
-                         overlap_fields =False)
-        if timeindex % 3 == 0:
-            if wrf_vars[v]['varname'] == '3hourly_prec':
-                figurename = out_path + '/' + domain +'_' + varname + \
-                             forecast_step +".png"
-                plot_map(varname = varname,
-                         field_fill = totprec_3h,
-                         cart_proj = cart_proj,
-                         lons = lons,
-                         lats = lats,
-                         string_date_init = string_date_init,
-                         string_date_forecast = string_date_forecast,
-                         title = title,
-                         colormap = 'prec',
-                         figurename = figurename,
-                         varname_additional = 'none',
-                         field_contour = 'none',
-                         u_wind = 'none',
-                         v_wind = 'none',
-                         ws = 'none',
-                         contour = False,
-                         windvectors = False,
-                         overlap_fields =False)
-                totprec_3h=0
-        if timeindex % 6 == 0:
-            if wrf_vars[v]['varname'] == '6hourly_prec':
-                figurename = out_path + '/' + domain +'_' + varname + \
-                             forecast_step +".png"
-                plot_map(varname = varname,
-                         field_fill = totprec_6h,
-                         cart_proj = cart_proj,
-                         lons = lons,
-                         lats = lats,
-                         string_date_init = string_date_init,
-                         string_date_forecast = string_date_forecast,
-                         title = title,
-                         colormap = 'prec',
-                         figurename = figurename,
-                         varname_additional = 'none',
-                         field_contour = 'none',
-                         u_wind = 'none',
-                         v_wind = 'none',
-                         ws = 'none',
-                         contour = False,
-                         windvectors = False,
-                         overlap_fields =False)
-                totprec_6h=0
-        if timeindex % 12 == 0:
-            if wrf_vars[v]['varname'] == '12hourly_prec':
-                figurename = out_path + '/' + domain +'_' + varname + \
-                             forecast_step +".png"
-                plot_map(varname = varname,
-                         field_fill = totprec_12h,
-                         cart_proj = cart_proj,
-                         lons = lons,
-                         lats = lats,
-                         string_date_init = string_date_init,
-                         string_date_forecast = string_date_forecast,
-                         title = title,
-                         colormap = 'prec',
-                         figurename = figurename,
-                         varname_additional = 'none',
-                         field_contour = 'none',
-                         u_wind = 'none',
-                         v_wind = 'none',
-                         ws = 'none',
-                         contour = False,
-                         windvectors = False,
-                         overlap_fields =False)
-                totprec_12h=0
-        if timeindex % 24 == 0:
-            if wrf_vars[v]['varname'] == '24hourly_prec':
-                figurename = out_path + '/' + domain +'_' + varname + \
-                             forecast_step +".png"
-                plot_map(varname = varname,
-                         field_fill = totprec_24h,
-                         cart_proj = cart_proj,
-                         lons = lons,
-                         lats = lats,
-                         string_date_init = string_date_init,
-                         string_date_forecast = string_date_forecast,
-                         title = title,
-                         colormap = 'prec',
-                         figurename = figurename,
-                         varname_additional = 'none',
-                         field_contour = 'none',
-                         u_wind = 'none',
-                         v_wind = 'none',
-                         ws = 'none',
-                         contour = False,
-                         windvectors = False,
-                         overlap_fields =False)
-                totprec_24h=0
-    #del(wrfv) 
+
+
+
 
 #%%
 #debug
@@ -553,28 +426,171 @@ cart_proj = get_cartopy(mslp)
 
 #%%
 #time_offset = 0 # 6 hours (forecast starts at 18utc)
-iterable = list(wrf_vars)
+# parallelize map creration except for precipitation (to be accumulated)
+scalar_vars={}
+parallel_vars={}
+for v in wrf_vars:
+    if wrf_vars[v]['type']=='prec':
+       scalar_vars[v]=wrf_vars[v]
+    else:
+       parallel_vars[v]=wrf_vars[v]
+
 totprec_h = 0
 totprec_3h = 0
 totprec_6h = 0
 totprec_12h = 0
 totprec_24h = 0
-for timeindex in range(start_step,end_step+1,deltastep):
-    forecast_step = "+" + str(timeindex).zfill(2)
-    timeforecast = pd.to_datetime(str(wrf_time[timeindex]))
-    day_forecast = timeforecast.strftime("%a")
-    string_date_forecast = "Forecast Date: " + day_forecast + ", " + \
-        timeforecast.strftime("%b %d %Y, %H:%M") + " UTC"
-    string_forecast_step = "Forecast Time: " + forecast_step + \
-    " hours, " + timeforecast.strftime("%d %B %Y, %H:%M")+ " UTC"
-    print(string_forecast_step) 
-    t2 = timeforecast.strftime("%Y%m%d_%H%M")
 
-    num_cores = min(multiprocessing.cpu_count(),len(wrf_vars))
-    print('Parallel process: using '+str(num_cores)+' cores')
-    #pool = multiprocessing.Pool(processes=num_cores) 
-    pool = multiprocessing.Pool(processes=1) #limito a due per non piantare VM
-    func = partial(make_plots,wrf_vars)
-    pool.map(func,iterable)
-    pool.close()
-    pool.join()
+iterable = list(parallel_vars)
+for timeindex in range(start_step,end_step+1,deltastep):
+   forecast_step = "+" + str(timeindex).zfill(2)
+   timeforecast = pd.to_datetime(str(wrf_time[timeindex]))
+   day_forecast = timeforecast.strftime("%a")
+   string_date_forecast = "Forecast Date: " + day_forecast + ", " + \
+       timeforecast.strftime("%b %d %Y, %H:%M") + " UTC"
+   string_forecast_step = "Forecast Time: " + forecast_step + \
+   " hours, " + timeforecast.strftime("%d %B %Y, %H:%M")+ " UTC"
+   print(string_forecast_step) 
+   t2 = timeforecast.strftime("%Y%m%d_%H%M")
+
+   #parallel process (not precipitation)
+   num_cores = min(multiprocessing.cpu_count(),len(parallel_vars))
+   print('Parallel process: using '+str(num_cores)+' cores\n')
+   #pool = multiprocessing.Pool(processes=num_cores) 
+   pool = multiprocessing.Pool(processes=1) #limito a due per non piantare VM
+   func = partial(make_plots,parallel_vars)
+   pool.map(func,iterable)
+   pool.close()
+   pool.join()
+
+   #scalar process (precipitation)
+   totprec_h = getvar(ncfile, 'PREC_ACC_NC', timeidx=timeindex) + \
+               getvar(ncfile, 'PREC_ACC_C', timeidx=timeindex)
+   totprec_3h = totprec_3h + totprec_h
+   totprec_6h = totprec_6h + totprec_h
+   totprec_12h = totprec_12h + totprec_h
+   totprec_24h = totprec_24h + totprec_h
+
+   for v in scalar_vars:
+      varname = scalar_vars[v]['varname']
+      title1 = scalar_vars[v]['title']
+      title2 = string_date_init + "\n" + string_date_forecast
+      title = title1 + "\n" + title2
+      if scalar_vars[v]['varname'] == 'hourly_prec':
+          logger.info('Processing: {}\n'.format(v))
+          figurename = out_path + '/' + domain +'_' + varname + \
+                      forecast_step +".png"
+          plot_map(varname = varname,
+                       field_fill =totprec_h,
+                       cart_proj = cart_proj,
+                       lons = lons,
+                       lats = lats,
+                       string_date_init = string_date_init,
+                       string_date_forecast = string_date_forecast,
+                       title = title,
+                       colormap = 'prec',
+                       figurename = figurename,
+                       varname_additional = 'none',
+                       field_contour = 'none',
+                       u_wind = 'none',
+                       v_wind = 'none',
+                       ws = 'none',
+                       contour = False,
+                       windvectors = False,
+                       overlap_fields =False)
+      if timeindex % 3 == 0:
+          if scalar_vars[v]['varname'] == '3hourly_prec':
+              logger.info('Processing: {}'.format(v))
+              figurename = out_path + '/' + domain +'_' + varname + \
+                           forecast_step +".png"
+              plot_map(varname = varname,
+                       field_fill = totprec_3h,
+                       cart_proj = cart_proj,
+                       lons = lons,
+                       lats = lats,
+                       string_date_init = string_date_init,
+                       string_date_forecast = string_date_forecast,
+                       title = title,
+                       colormap = 'prec',
+                       figurename = figurename,
+                       varname_additional = 'none',
+                       field_contour = 'none',
+                       u_wind = 'none',
+                       v_wind = 'none',
+                       ws = 'none',
+                       contour = False,
+                       windvectors = False,
+                       overlap_fields =False)
+              totprec_3h=0
+      if timeindex % 6 == 0:
+          if scalar_vars[v]['varname'] == '6hourly_prec':
+              logger.info('Processing: {}'.format(v))
+              figurename = out_path + '/' + domain +'_' + varname + \
+                           forecast_step +".png"
+              plot_map(varname = varname,
+                       field_fill = totprec_6h,
+                       cart_proj = cart_proj,
+                       lons = lons,
+                       lats = lats,
+                       string_date_init = string_date_init,
+                       string_date_forecast = string_date_forecast,
+                       title = title,
+                       colormap = 'prec',
+                       figurename = figurename,
+                       varname_additional = 'none',
+                       field_contour = 'none',
+                       u_wind = 'none',
+                       v_wind = 'none',
+                       ws = 'none',
+                       contour = False,
+                       windvectors = False,
+                       overlap_fields =False)
+              totprec_6h=0
+      if timeindex % 12 == 0:
+          if scalar_vars[v]['varname'] == '12hourly_prec':
+              logger.info('Processing: {}'.format(v))
+              figurename = out_path + '/' + domain +'_' + varname + \
+                           forecast_step +".png"
+              plot_map(varname = varname,
+                       field_fill = totprec_12h,
+                       cart_proj = cart_proj,
+                       lons = lons,
+                       lats = lats,
+                       string_date_init = string_date_init,
+                       string_date_forecast = string_date_forecast,
+                       title = title,
+                       colormap = 'prec',
+                       figurename = figurename,
+                       varname_additional = 'none',
+                       field_contour = 'none',
+                       u_wind = 'none',
+                       v_wind = 'none',
+                       ws = 'none',
+                       contour = False,
+                       windvectors = False,
+                       overlap_fields =False)
+              totprec_12h=0
+      if timeindex % 24 == 0:
+          if scalar_vars[v]['varname'] == '24hourly_prec':
+              logger.info('Processing: {}'.format(v))
+              figurename = out_path + '/' + domain +'_' + varname + \
+                           forecast_step +".png"
+              plot_map(varname = varname,
+                       field_fill = totprec_24h,
+                       cart_proj = cart_proj,
+                       lons = lons,
+                       lats = lats,
+                       string_date_init = string_date_init,
+                       string_date_forecast = string_date_forecast,
+                       title = title,
+                       colormap = 'prec',
+                       figurename = figurename,
+                       varname_additional = 'none',
+                       field_contour = 'none',
+                       u_wind = 'none',
+                       v_wind = 'none',
+                       ws = 'none',
+                       contour = False,
+                       windvectors = False,
+                       overlap_fields =False)
+              totprec_24h=0
