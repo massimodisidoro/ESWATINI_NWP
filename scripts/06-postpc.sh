@@ -47,37 +47,46 @@ while [[ $count -le 90 ]];do
   count=$(( $count +1 ))
 done
   
-
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
+# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
 #start postproc procedure 
-filewrf="$dir_archive/${date_forecast}_${gfs_reference_time}/wrfout_d02_${year}-${month}-${day}_${hour}:00:00"
+for domain in 02 01;do
+  filewrf="$dir_archive/${date_forecast}_${gfs_reference_time}/wrfout_d${domain}_${year}-${month}-${day}_${hour}:00:00"
 
-if [[ ! -f $filewrf ]];then
-  echo "wrf file $filewrf not found"
-  echo "EXIT procedure"
-fi
+  if [[ ! -f $filewrf ]];then
+    echo "wrf file $filewrf not found"
+    echo "EXIT procedure"
+  fi
+  
+  
+  end_step=$(( forecast_length +1))
+  
+  
+  fig_meteo_archive=$dir_archive/${date_forecast}_${gfs_reference_time}/figures/
+  mkdir -p $fig_meteo_archive
+  
+  if [[ $domain == "02" ]];then
+    #skewt plots
+    tmpfile=$dir_tmp/tmpfile
+    cat $dir_post/tslist | grep -v "#" > $tmpfile
+    while read name prefix lat lon;do
+      name=`echo $name |sed "s/_/ /g"`
+      $python $dir_post/plot_skewt.py $filewrf --start 3 --end $end_step --deltastep $deltastep_maps --lat $lat --lon $lon --profilename "$name" --out $fig_meteo_archive
+    done < $tmpfile
+    rm $tmpfile
 
-
-end_step=$(( forecast_length +1))
-
-
-fig_meteo_archive=$dir_archive/${date_forecast}_${gfs_reference_time}/figures/
-mkdir -p $fig_meteo_archive
-
-#skewt plots
-tmpfile=$dir_tmp/tmpfile
-cat $dir_post/tslist | grep -v "#" > $tmpfile
-while read name prefix lat lon;do
-  name=`echo $name |sed "s/_/ /g"`
-  $python $dir_post/plot_skewt.py $filewrf --start 3 --end $end_step --deltastep $deltastep_maps --lat $lat --lon $lon --profilename "$name" --out $fig_meteo_archive
-done < $tmpfile
-rm $tmpfile
-#set -x
-#meteograms
-Rscript $dir_post/meteogram.R --pathin $dir_tmp --date_forecast ${date_forecast}${gfs_reference_time} --out $fig_meteo_archive
-
-
-#maps
-$python $dir_post/plot_figures.py $filewrf --start 3 --end $end_step --out $fig_meteo_archive --config $dir_post/var.yaml --deltastep $deltastep_maps
+    #meteograms
+    Rscript $dir_post/meteogram.R --pathin $dir_tmp --date_forecast ${date_forecast}${gfs_reference_time} --out $fig_meteo_archive
+  fi #profiles and meteograms only for hres domain (02)
+  
+  #maps
+  $python $dir_post/plot_figures.py $filewrf --start 3 --end $end_step --out $fig_meteo_archive --config $dir_post/var.yaml --deltastep $deltastep_maps
+done # cycle over both domains (5km and 1 km resolution)
 
 
 #transfer plots to windows machine
@@ -86,6 +95,10 @@ $python $dir_post/plot_figures.py $filewrf --start 3 --end $end_step --out $fig_
  yesterday_folder=${date_forecastm1}_$gfs_reference_time
  # build list with files to be transferred
  ls -1 $fig_meteo_archive > tmp.txt
+
+# IF CHANGE DESTINATION MACHINE IS NEEDED, THE FOLLOWING
+# THREE rclone COMMANDS MUST BE UPDATED, AFTER CONFIGURING THE
+# NEW DESTINATION WITH "rclone config"
  #create remote folder where to copy files
  rclone mkdir sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder
  # copy files to remote folder
