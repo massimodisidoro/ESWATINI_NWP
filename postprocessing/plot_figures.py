@@ -60,9 +60,9 @@ def plot_map(varname,
     #fig, ax = plt.subplots()
     #fig = plt.figure(figsize=(12,9))
     ax = plt.axes(projection=cart_proj)
-    ax.add_feature(cf.LAND)
-    ax.add_feature(cf.COASTLINE)
-    ax.add_feature(cf.BORDERS)
+    #ax.add_feature(cf.LAND)
+    ax.add_feature(cf.COASTLINE, linewidths=1.3)
+    ax.add_feature(cf.BORDERS, linewidths=1.3)
     if colormap == 'prec':
         levels_fill = def_vars(varname)[0]
         extend_colorbar = def_vars(varname)[1]
@@ -97,30 +97,60 @@ def plot_map(varname,
                  levels = levels_fill,transform=crs.PlateCarree(),
                  cmap=cmap, norm=norm, 
                  extend = extend_colorbar)   
-    else:
+    else: #not precipitation
         if not windvectors:
             if overlap_fields:
                levels_contour = def_vars(varname)[0]
                levels_fill = def_vars(varname_additional)[0]
                extend_colorbar = def_vars(varname_additional)[1]
-               contours = plt.contour(to_np(lons),to_np(lats), 
+               cnt = plt.contour(to_np(lons),to_np(lats), 
                                      to_np(field_contour),
-                                     levels=levels_contour, colors="black",
+                                     levels=levels_contour, 
+                                     colors="black",
+                                     linewidths=0.75,
                                      transform=crs.PlateCarree())
-               plt.clabel(contours)
+               plt.clabel(cnt, inline=1, fontsize=10, fmt="%i")
                cmap = get_cmap(colormap).copy()
                cmap.set_extremes(under='white') 
+               if varname[0:2] == 'rh':
+                  cmap = cmap.reversed() #reverse colors for RH
                plt.contourf(to_np(lons), to_np(lats), to_np(field_fill), 10,
                     levels=levels_fill,transform=crs.PlateCarree(),
                     cmap=get_cmap(colormap), extend = extend_colorbar)
             else: #not overlap fields
-               levels_fill = def_vars(varname)[0]
-               extend_colorbar = def_vars(varname)[1]
-               cmap = get_cmap(colormap).copy()
-               cmap.set_extremes(under='white') 
-               plt.contourf(to_np(lons), to_np(lats), to_np(field_fill), 10,
-                    levels=levels_fill,transform=crs.PlateCarree(),
-                    cmap=get_cmap(colormap), extend = extend_colorbar)
+                if contour:
+                   cmap = get_cmap(colormap).copy()
+                   cmap.set_extremes(under='white') 
+                   levels_fill = def_vars(varname)[0]
+                   #print('zzzzz ',varname, ' ',levels_fill)
+                   cnt = plt.contour(to_np(lons),to_np(lats),to_np(field_fill),
+                                  levels=levels_fill,
+                                  colors="black", linewidths=0.75,
+                                  transform=crs.PlateCarree())
+                   plt.clabel(cnt, inline=1, fontsize=10, fmt="%i")
+                   #plt.clabel(cnt, inline=1)
+                   extend_colorbar = def_vars(varname)[1]
+                   if varname[0:2] == 'rh': #if rh reverse colorbar
+                      map_reversed = cmap.reversed()
+                      plt.contourf(to_np(lons), to_np(lats), to_np(field_fill),
+                          nchunk=10, levels=levels_fill,
+                          transform=crs.PlateCarree(),
+                          cmap=map_reversed, extend = extend_colorbar)
+                   else: #if not RH
+                       plt.contourf(to_np(lons), to_np(lats), to_np(field_fill),
+                          nchunk=10, levels=levels_fill,
+                          transform=crs.PlateCarree(),
+                          cmap=get_cmap(colormap), extend = extend_colorbar)
+                else: #not contour
+                   levels_fill = def_vars(varname)[0]
+                   extend_colorbar = def_vars(varname)[1]
+                   cmap = get_cmap(colormap).copy()
+                   cmap.set_extremes(under='white') 
+                   if varname[0:2] == 'rh':
+                      cmap = cmap.reversed()
+                   plt.contourf(to_np(lons), to_np(lats), to_np(field_fill), 10,
+                        levels=levels_fill,transform=crs.PlateCarree(),
+                        cmap=get_cmap(colormap), extend = extend_colorbar)
         else: #windvectors
             levels_fill = def_vars(varname)[0]
             extend_colorbar = def_vars(varname)[1]
@@ -203,9 +233,13 @@ def make_plots(wrf_vars,v):
    
     if plot_type == 'surf':
         if windvectors:
-           ua = getvar(ncfile, "U10", units="kt",timeidx=timeindex)
-           va = getvar(ncfile, "V10", units="kt",timeidx=timeindex)
-           ws = getvar(ncfile, "wspd_wdir10",units="kt",timeidx=timeindex)[0,:]
+           ua = getvar(ncfile, "U10", timeidx=timeindex)
+           va = getvar(ncfile, "V10", timeidx=timeindex)
+           #ws = getvar(ncfile, "wspd_wdir10",units="kt",timeidx=timeindex)[0,:]
+           ws = getvar(ncfile, "wspd_wdir10",timeidx=timeindex)[0,:]
+           ua=ua*1.94384 # conversion toknots
+           va=va*1.94384 # conversion toknots
+           ws=ws*1.94384 
            varname = wrf_vars[v]['varname']
            varname_additional = wrf_vars[v]['varname_additional']
         else:
@@ -232,9 +266,15 @@ def make_plots(wrf_vars,v):
         pressure = getvar(ncfile,'pres', timeidx = timeindex, units='hPa')
 
         if windvectors:
-            ua = getvar(ncfile, "ua",units="kt",timeidx=timeindex)
-            va = getvar(ncfile, "va",units="kt",timeidx=timeindex)
-            ws = getvar(ncfile, "wspd_wdir",units="kt",timeidx=timeindex)[0,:]
+            #ua = getvar(ncfile, "ua",units="kt",timeidx=timeindex)
+            #va = getvar(ncfile, "va",units="kt",timeidx=timeindex)
+            #ws = getvar(ncfile, "wspd_wdir",units="kt",timeidx=timeindex)[0,:]
+            ua = getvar(ncfile, "ua",timeidx=timeindex)
+            va = getvar(ncfile, "va",timeidx=timeindex)
+            ws = getvar(ncfile, "wspd_wdir",timeidx=timeindex)[0,:]
+            ua=ua*1.94384 # conversion toknots
+            va=va*1.94384 # conversion toknots
+            ws=ws*1.94384 # conversion toknots
             ua = interp_pressure_level(ncfile,pressure_level,ua,pressure)
             va = interp_pressure_level(ncfile,pressure_level,va,pressure)
             ws = interp_pressure_level(ncfile,pressure_level,ws,pressure)
@@ -257,6 +297,7 @@ def make_plots(wrf_vars,v):
         figurename = out_path + '/' + domain +'_' + \
                      varname+forecast_step +".png"
 
+    #if wrf_vars[v]['wrf_name'] == 'geopt' and wrf_vars[v]['pressure_level'] > 700:
     if wrf_vars[v]['wrf_name'] == 'geopt':
         wrfv = wrfv/98.1 #dam
     if wrf_vars[v]['wrf_name'] == 'T2':
@@ -327,7 +368,6 @@ def make_plots(wrf_vars,v):
             if wrf_vars[v]['varname'] == '3hourly_prec':
                 figurename = out_path + '/' + domain +'_' + varname + \
                              forecast_step +".png"
-                print(figurename)
                 plot_map(varname = varname,
                          field_fill = totprec_3h,
                          cart_proj = cart_proj,
@@ -346,6 +386,7 @@ def make_plots(wrf_vars,v):
                          contour = False,
                          windvectors = False,
                          overlap_fields =False)
+                totprec_3h=0
         if timeindex % 6 == 0:
             if wrf_vars[v]['varname'] == '6hourly_prec':
                 figurename = out_path + '/' + domain +'_' + varname + \
@@ -368,6 +409,7 @@ def make_plots(wrf_vars,v):
                          contour = False,
                          windvectors = False,
                          overlap_fields =False)
+                totprec_6h=0
         if timeindex % 12 == 0:
             if wrf_vars[v]['varname'] == '12hourly_prec':
                 figurename = out_path + '/' + domain +'_' + varname + \
@@ -390,6 +432,7 @@ def make_plots(wrf_vars,v):
                          contour = False,
                          windvectors = False,
                          overlap_fields =False)
+                totprec_12h=0
         if timeindex % 24 == 0:
             if wrf_vars[v]['varname'] == '24hourly_prec':
                 figurename = out_path + '/' + domain +'_' + varname + \
@@ -412,6 +455,7 @@ def make_plots(wrf_vars,v):
                          contour = False,
                          windvectors = False,
                          overlap_fields =False)
+                totprec_24h=0
     #del(wrfv) 
 
 #%%
@@ -510,6 +554,7 @@ cart_proj = get_cartopy(mslp)
 #%%
 #time_offset = 0 # 6 hours (forecast starts at 18utc)
 iterable = list(wrf_vars)
+totprec_h = 0
 totprec_3h = 0
 totprec_6h = 0
 totprec_12h = 0
@@ -527,7 +572,8 @@ for timeindex in range(start_step,end_step+1,deltastep):
 
     num_cores = min(multiprocessing.cpu_count(),len(wrf_vars))
     print('Parallel process: using '+str(num_cores)+' cores')
-    pool = multiprocessing.Pool(processes=num_cores)
+    #pool = multiprocessing.Pool(processes=num_cores) 
+    pool = multiprocessing.Pool(processes=1) #limito a due per non piantare VM
     func = partial(make_plots,wrf_vars)
     pool.map(func,iterable)
     pool.close()

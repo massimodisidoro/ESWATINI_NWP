@@ -9,14 +9,14 @@ This function defines some features of the maps plotted:
     Note that varname is the correspondend "varname" key in
     the configuration file vars.yaml, in which the actual
     variables to be plotted are defined
-    Here are defined the color/contour leveld (variable "levels") values
-    in terms of range (np.range) or single values.
+    Here are defined the color/contour levels (variable "levels") values
+    in terms of range (np.range: min, max, delta) or single values.
     The variable "extend_colorbar" indicates if colorbar must indicate
     out of range values in max and min (extend_colorbar = 'both') 
     or only  for maximum extend_colorbar = 'max') or minimum 
     (extend_colorbar = 'min') values.
     NOTE: ONLY for Precipitation the NUMBER of levels is FIXED, you
-    can change the values but not level number. For the other
+    can change the values but not the number of levels. For the other
     fields you can change values and number of levels.
 
 Report Bugs to massimo.disidoro@enea.it
@@ -35,7 +35,7 @@ def def_vars(varname):
         levels = np.arange(0, 110., 10.)
         extend_colorbar = 'neither'
     elif varname == 'w10m':
-        levels = np.arange(2, 40., 2.)
+        levels = np.arange(2, 36., 2.)
         extend_colorbar = 'both'
     elif varname == 'tcc':
         levels = np.arange(0, 100., 5.)
@@ -59,34 +59,34 @@ def def_vars(varname):
         levels = (0.5,1,3,5,7,10,15,20,25,30,40,50,60,70,80,100,125,150,175,200,250,300,350)
         extend_colorbar = 'both'
     elif varname == 'z850':
-        levels = np.arange(150, 160, 2)
+        levels = np.arange(140, 182, 2)
         extend_colorbar = 'both'
     elif varname == 'z700':
-        levels = np.arange(300, 330, 3)
+        levels = np.arange(300, 330, 2)
         extend_colorbar = 'both'
     elif varname == 'z500':
-        levels = np.arange(580, 590, 2)
+        levels = np.arange(560, 592, 2)
         extend_colorbar = 'both'
     elif varname == 'z300':
         levels = np.arange(920, 1000, 5)
         extend_colorbar = 'both'
     elif varname == 'z250':
-        levels = np.arange(1100, 1200, 12)
+        levels = np.arange(1000, 1220, 20)
         extend_colorbar = 'both'
     elif varname == 't850':
-        levels = np.arange(0, 26, 2)
+        levels = np.arange(0, 34, 2)
         extend_colorbar = 'both'
     elif varname == 't700':
         levels = np.arange(-2, 20, 1)
         extend_colorbar = 'both'
     elif varname == 't500':
-        levels = np.arange(-10, 6, 2)
+        levels = np.arange(-40, 6, 3)
         extend_colorbar = 'both'
     elif varname == 't300':
-        levels = np.arange(-42, -30, 2)
+        levels = np.arange(-42, -30, 1)
         extend_colorbar = 'both'
     elif varname == 't250':
-        levels = np.arange(-50, -40, 1)
+        levels = np.arange(-50, -41, 1)
         extend_colorbar = 'both'
     elif varname == 'w850':
         levels = np.arange(4, 64, 4)

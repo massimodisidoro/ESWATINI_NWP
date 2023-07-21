@@ -49,14 +49,14 @@
     'windvectors'    : False
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Cloud Fraction (%)'
+    'title'          : 'Cloud Cover (%)'
     'colormap'       : 'Blues_r'
 'CAPE':
     'wrf_name'       : 'cape'
     'type'           : 'surf'
     'pressure_level' : 0
     'varname'     : 'cape'
-    'contour'        : False
+    'contour'        : true
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
@@ -163,7 +163,7 @@
     'windvectors'    : True
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Wind vectors 10m (m/s)'
+    'title'          : 'Wind vectors 10m (knots)'
     'colormap'       : 'turbo'   
 'GPH850':
     'wrf_name'       : 'geopt'
@@ -235,7 +235,7 @@
     'windvectors'    : True
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Wind at 850 hPa (m/s)'
+    'title'          : 'Wind at 850 hPa (knots)'
     'colormap'       : 'turbo'   
 'W700':
     'wrf_name'       : 'none'
@@ -247,7 +247,7 @@
     'windvectors'    : True
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Wind at 700 hPa (m/s)'
+    'title'          : 'Wind at 700 hPa (knots)'
     'colormap'       : 'turbo'   
 'W500':
     'wrf_name'       : 'none'
@@ -259,7 +259,7 @@
     'windvectors'    : True
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Wind at 500 hPa (m/s)'
+    'title'          : 'Wind at 500 hPa (knots)'
     'colormap'       : 'turbo'   
 'W300':
     'wrf_name'       : 'none'
@@ -271,7 +271,7 @@
     'windvectors'    : True
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Wind at 300 hPa (m/s)'
+    'title'          : 'Wind at 300 hPa (knots)'
     'colormap'       : 'turbo'   
 'W250':
     'wrf_name'       : 'none'
@@ -283,14 +283,14 @@
     'windvectors'    : True
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Wind at 250 hPa (m/s)'
+    'title'          : 'Wind at 250 hPa (knots)'
     'colormap'       : 'turbo'   
 'T850':
     'wrf_name'       : 'tc'
     'type'           : 'lev'
     'pressure_level' : 850
     'varname'        : 't850'
-    'contour'        : False
+    'contour'        : True
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
@@ -302,7 +302,7 @@
     'type'           : 'lev'
     'pressure_level' : 700
     'varname'        : 't700'
-    'contour'        : False
+    'contour'        : True
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
@@ -314,7 +314,7 @@
     'type'           : 'lev'
     'pressure_level' : 500
     'varname'        : 't500'
-    'contour'        : False
+    'contour'        : True
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
@@ -326,7 +326,7 @@
     'type'           : 'lev'
     'pressure_level' : 300
     'varname'        : 't300'
-    'contour'        : False
+    'contour'        : True
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
@@ -338,7 +338,7 @@
     'type'           : 'lev'
     'pressure_level' : 250
     'varname'        : 't250'
-    'contour'        : False
+    'contour'        : True
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
