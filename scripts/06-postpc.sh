@@ -86,27 +86,33 @@ for domain in 02 01;do
   
   #maps
   $python $dir_post/plot_figures.py $filewrf --start 3 --end $end_step --out $fig_meteo_archive --config $dir_post/var.yaml --deltastep $deltastep_maps
+#done # cycle over both domains (5km and 1 km resolution)
+
+
+  #transfer plots to windows machine
+   #folder name on remote machine to which put the data
+   folder=${date_forecast}_${gfs_reference_time}_d${domain}
+   # define yesterday folder to delete yesterday data on remote machine
+   yesterday_folder=${date_forecastm1}_${gfs_reference_time}_d${domain}
+  
+   # build tmp.txt file containing the list of files to be transferred
+   ls -1 $fig_meteo_archive/d${domain}* > tmp.txt
+   if [[ $domain == "02" ]];then
+     ls -1 $fig_meteo_archive/meteogram* >> tmp.txt
+   fi
+  
+  # IF CHANGE DESTINATION MACHINE IS NEEDED, THE FOLLOWING
+  # THREE rclone COMMANDS MUST BE UPDATED, AFTER CONFIGURING THE
+  # NEW DESTINATION WITH "rclone config"
+   #create remote folder where to copy files
+   rclone mkdir sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder
+   # copy files to remote folder
+   rclone copy $fig_meteo_archive sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder --include-from=tmp.txt
+   #remove remote folder containing yesterday forecasts
+   rclone purge sive_windows_machine:C:/Users/Met/Desktop/ENEA/$yesterday_folder
+  
+  #transfer test on enea  machine
+  #rclone mkdir enea://gporq3/minni/minniusers/disidoro/tmp/$folder -vv
+  #rclone copy $fig_meteo_archive enea:/gporq3/minni/minniusers/disidoro/tmp/$folder --include-from=tmp.txt -vv
+  rm tmp.txt
 done # cycle over both domains (5km and 1 km resolution)
-
-
-#transfer plots to windows machine
- #folder name on remote machine
- folder=${date_forecast}_${gfs_reference_time}
- yesterday_folder=${date_forecastm1}_$gfs_reference_time
- # build list with files to be transferred
- ls -1 $fig_meteo_archive > tmp.txt
-
-# IF CHANGE DESTINATION MACHINE IS NEEDED, THE FOLLOWING
-# THREE rclone COMMANDS MUST BE UPDATED, AFTER CONFIGURING THE
-# NEW DESTINATION WITH "rclone config"
- #create remote folder where to copy files
- rclone mkdir sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder
- # copy files to remote folder
- rclone copy $fig_meteo_archive sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder --include-from=tmp.txt
- #remove remote folder containing yesterday forecasts
- rclone purge sive_windows_machine:C:/Users/Met/Desktop/ENEA/$yesterday_folder
-
-#transfer test on enea  machine
-#rclone mkdir enea://gporq3/minni/minniusers/disidoro/tmp/$folder -vv
-#rclone copy $fig_meteo_archive enea:/gporq3/minni/minniusers/disidoro/tmp/$folder --include-from=tmp.txt -vv
-rm tmp.txt

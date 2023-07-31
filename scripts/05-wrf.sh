@@ -99,5 +99,5 @@ mpirun -np $nprocs_wrf --hostfile $dir_tmp/hostfile $dir_exe/wrf.exe &> $dir_log
 cp namelist.input $dir_log/namelist.input_$date_forecast
 mkdir -p $dir_log/wrflog
 cp rsl* $dir_log/wrflog
-cp wrfout*d02* $dir_archive/${date_forecast}_${gfs_reference_time}
+cp wrfout*d0* $dir_archive/${date_forecast}_${gfs_reference_time}
 
