@@ -456,8 +456,8 @@ for timeindex in range(start_step,end_step+1,deltastep):
    #parallel process (not precipitation)
    num_cores = min(multiprocessing.cpu_count(),len(parallel_vars))
    print('Parallel process: using '+str(num_cores)+' cores\n')
-   #pool = multiprocessing.Pool(processes=num_cores) 
-   pool = multiprocessing.Pool(processes=1) #limito a due per non piantare VM
+   pool = multiprocessing.Pool(processes=num_cores) 
+   #pool = multiprocessing.Pool(processes=1)
    func = partial(make_plots,parallel_vars)
    pool.map(func,iterable)
    pool.close()

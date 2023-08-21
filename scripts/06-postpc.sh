@@ -47,28 +47,25 @@ while [[ $count -le 90 ]];do
   count=$(( $count +1 ))
 done
   
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
-# mettere ciclo su d1 e d2 e per d1 non fare meteogrammi e profili ma solo mappe
 #start postproc procedure 
+end_step=$(( forecast_length +1))
+fig_meteo_archive=$dir_archive/${date_forecast}_${gfs_reference_time}/figures/
+mkdir -p $fig_meteo_archive
+
 for domain in 02 01;do
   filewrf="$dir_archive/${date_forecast}_${gfs_reference_time}/wrfout_d${domain}_${year}-${month}-${day}_${hour}:00:00"
 
   if [[ ! -f $filewrf ]];then
     echo "wrf file $filewrf not found"
     echo "EXIT procedure"
+    exit 1
+  else
+    #copy wrfout to test graph folder, to be used for graphical tests if needed
+    #same as for tslist and .TS files
+    cp $filewrf $dir_post/test_graphical_outputs/
+    cp $dir_post/tslist $dir_post/test_graphical_outputs/
+    cp $dir_archive/${date_forecast}_${gfs_reference_time}/*d02*.TS  $dir_post/test_graphical_outputs/
   fi
-  
-  
-  end_step=$(( forecast_length +1))
-  
-  
-  fig_meteo_archive=$dir_archive/${date_forecast}_${gfs_reference_time}/figures/
-  mkdir -p $fig_meteo_archive
   
   if [[ $domain == "02" ]];then
     #skewt plots
@@ -97,7 +94,7 @@ for domain in 02 01;do
    find $fig_meteo_archive/ -type f -name "d${domain}*" | xargs -I {} basename {} > tmp.txt
    #ls -1 $fig_meteo_archive/d${domain}* > tmp.txt
    if [[ $domain == "02" ]];then
-     find $fig_meteo_archive/ -type f -name "meteogram*"  | xargs -I {} basename {} >> txt.txt
+     find $fig_meteo_archive/ -type f -name "meteogram*"  | xargs -I {} basename {} >> tmp.txt
      #ls -1 $fig_meteo_archive/meteogram* >> tmp.txt
    fi
 
@@ -118,7 +115,7 @@ for domain in 02 01;do
       age=$(( (current_timestamp - folder_timestamp) / 86400 )) # expressed in days (integer part)
       if [ "$age" -gt "$remote_folder_age" ]; then
         echo "Deleting: $folder"
-        rclone purge $remote_machine:${remote_folder_path}/$folder --dry-run
+        rclone purge $remote_machine:${remote_folder_path}/$folder #--dry-run
       fi
     fi
    done

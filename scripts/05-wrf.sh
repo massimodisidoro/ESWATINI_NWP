@@ -100,4 +100,4 @@ cp namelist.input $dir_log/namelist.input_$date_forecast
 mkdir -p $dir_log/wrflog
 cp rsl* $dir_log/wrflog
 cp wrfout*d0* $dir_archive/${date_forecast}_${gfs_reference_time}
-
+cp *d02*.TS $dir_archive/${date_forecast}_${gfs_reference_time}

@@ -67,7 +67,7 @@ export gfs_res=0p50
   # remove old folders in the remote machine. 
   # remove folders older than remote_folder_age days
   # use an integer number indicating the days (e.g. 2= removes folder older than 2 days)
-  remote_folder_age=2
+  remote_folder_age=3
 
 #clean archive
   # remove archived files older than $clear_older_days days
