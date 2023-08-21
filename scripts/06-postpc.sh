@@ -92,27 +92,39 @@ for domain in 02 01;do
   #transfer plots to windows machine
    #folder name on remote machine to which put the data
    folder=${date_forecast}_${gfs_reference_time}_d${domain}
-   # define yesterday folder to delete yesterday data on remote machine
-   yesterday_folder=${date_forecastm1}_${gfs_reference_time}_d${domain}
   
    # build tmp.txt file containing the list of files to be transferred
-   ls -1 $fig_meteo_archive/d${domain}* > tmp.txt
+   find $fig_meteo_archive/ -type f -name "d${domain}*" | xargs -I {} basename {} > tmp.txt
+   #ls -1 $fig_meteo_archive/d${domain}* > tmp.txt
    if [[ $domain == "02" ]];then
-     ls -1 $fig_meteo_archive/meteogram* >> tmp.txt
+     find $fig_meteo_archive/ -type f -name "meteogram*"  | xargs -I {} basename {} >> txt.txt
+     #ls -1 $fig_meteo_archive/meteogram* >> tmp.txt
    fi
-  
-  # IF CHANGE DESTINATION MACHINE IS NEEDED, THE FOLLOWING
-  # THREE rclone COMMANDS MUST BE UPDATED, AFTER CONFIGURING THE
-  # NEW DESTINATION WITH "rclone config"
+
+  # UPLOAD graphical output to remote machine
+  # NOTE that remote machine and its path are defined in "settings" file.
    #create remote folder where to copy files
-   rclone mkdir sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder
+   rclone mkdir ${remote_machine}:${remote_folder_path}/$folder
    # copy files to remote folder
-   rclone copy $fig_meteo_archive sive_windows_machine:C:/Users/Met/Desktop/ENEA/$folder --include-from=tmp.txt
-   #remove remote folder containing yesterday forecasts
-   rclone purge sive_windows_machine:C:/Users/Met/Desktop/ENEA/$yesterday_folder
-  
+   rclone copy $fig_meteo_archive ${remote_machine}:${remote_folder_path}/$folder --include-from=tmp.txt
+   #remove remote folder than remote_folder_age (this key is defined in settings, in days)
+   rclone lsf $remote_machine:${remote_folder_path} --dirs-only --format tp  | while read string; do
+   folder=$(echo $string |cut -d';' -f2)
+   folder_date=$(echo $string |cut -d';' -f1)
+   #echo $folder $folder_date
+    if [ ! -z "$folder_date" ]; then
+      folder_timestamp=$(date -d "$folder_date" +%s)
+      current_timestamp=$(date +%s)
+      age=$(( (current_timestamp - folder_timestamp) / 86400 )) # expressed in days (integer part)
+      if [ "$age" -gt "$remote_folder_age" ]; then
+        echo "Deleting: $folder"
+        rclone purge $remote_machine:${remote_folder_path}/$folder --dry-run
+      fi
+    fi
+   done
+
   #transfer test on enea  machine
-  #rclone mkdir enea://gporq3/minni/minniusers/disidoro/tmp/$folder -vv
-  #rclone copy $fig_meteo_archive enea:/gporq3/minni/minniusers/disidoro/tmp/$folder --include-from=tmp.txt -vv
+  rclone mkdir enea://gporq3/minni/minniusers/disidoro/tmp/$folder -vv
+  rclone copy $fig_meteo_archive enea:/gporq3/minni/minniusers/disidoro/tmp/$folder --include-from=tmp.txt -vv
   rm tmp.txt
 done # cycle over both domains (5km and 1 km resolution)

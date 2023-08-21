@@ -63,17 +63,17 @@
     'varname_additional'    : 'none'
     'title'          : 'CAPE (J/kg)'
     'colormap'       : 'turbo'
-'PREC_1h':
+'PREC_3h':
     'wrf_name'       : 'none'
     'type'           : 'prec'
     'pressure_level' : 0
-    'varname'     : 'hourly_prec'
+    'varname'     : '3hourly_prec'
     'contour'        : False
     'overlap_fields' : False
     'windvectors'    : False
     'wrf_name2'      : 'none'
     'varname_additional'    : 'none'
-    'title'          : 'Hourly precipitation (mm)'
+    'title'          : '3-Hourly precipitation (mm)'
     'colormap'       : 'prec'
 'PREC_6h':
     'wrf_name'       : 'none'
