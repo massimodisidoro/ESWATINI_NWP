@@ -52,6 +52,8 @@ end_step=$(( forecast_length +1))
 fig_meteo_archive=$dir_archive/${date_forecast}_${gfs_reference_time}/figures/
 mkdir -p $fig_meteo_archive
 
+rm $dir_post/test_graphical_outputs/wrfout* # remove old wrfout from test dir
+
 for domain in 02 01;do
   filewrf="$dir_archive/${date_forecast}_${gfs_reference_time}/wrfout_d${domain}_${year}-${month}-${day}_${hour}:00:00"
 
@@ -62,7 +64,7 @@ for domain in 02 01;do
   else
     #copy wrfout to test graph folder, to be used for graphical tests if needed
     #same as for tslist and .TS files
-    cp $filewrf $dir_post/test_graphical_outputs/
+    cp $filewrf $dir_post/test_graphical_outputs/ #cp new wrfout
     cp $dir_post/tslist $dir_post/test_graphical_outputs/
     cp $dir_archive/${date_forecast}_${gfs_reference_time}/*d02*.TS  $dir_post/test_graphical_outputs/
   fi
