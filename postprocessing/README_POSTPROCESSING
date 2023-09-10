@@ -1,0 +1,69 @@
+For detailed description, please refer to the Section 3.2.3 of the WP1.D2 
+deliverable of the project present in the folder /home/enwp/forecast_system/ESWATINI_NWP/doc
+
+#MAPS CUSTOMIZATIONS:
+
+#ADDING AND REMOVING A VARIABLE IN MAPS PLOTS:
+edit var.yaml to add or remove a variable in the output maps
+ ADDING a VARIABLE: 
+     from the file var.yaml_all_vars you can see all the available variables for plotting, 
+     just copy tha block of keys corresponding to the desired one and paste it at the end (or between two vars definitions) in var.yaml
+ REMOVING a VARIABLE: 
+     just remove the correspondent block of keys from var.yaml
+
+EXAMPLE: 
+    if you want to produce temperature at 300hPa plot in output, just copy the corresponding
+    block in var.yaml_all_vars; that is:
+'T300':
+
+    'wrf_name'       : 'tc'
+    'type'           : 'lev'
+    'pressure_level' : 300
+    'varname'        : 't300'
+    'contour'        : True
+    'overlap_fields' : False
+    'windvectors'    : False
+    'wrf_name2'      : 'none'
+    'varname_additional'    : 'none'
+    'title'          : 'Temperature at 300 hPa (°C)'
+    'colormap'       : 'turbo'
+
+     and paste it into var.yaml. The field will be produced starting from the following forecast.
+
+
+#MODIFY CONTOUR LEVELS IN MAP PLOTS
+To modify contour levels in maps, just edit the def_vars.py file in this folder:
+   It defines some features of the maps plotted:
+    Note that varname is the correspondend "varname" key in
+    the configuration file vars.yaml, in which the actual
+    variables to be plotted are defined
+    The colour/contour levels (variable "levels") values are defined
+    in terms of range (np.range: min, max, delta) or single values.
+    The variable "extend_colorbar" indicates if colorbar must indicate
+    out of range values in max and min (extend_colorbar = 'both')
+    or only  for maximum extend_colorbar = 'max') or minimum
+    (extend_colorbar = 'min') values.
+    NOTE: ONLY for Precipitation the NUMBER of levels is FIXED, you
+    can change the values but not the number of levels. For the other
+    fields you can change values and number of levels.
+
+
+#METEOGRAMS AND PROFILES CUSTOMIZATION
+
+You can add up to 30 sites for which produce meteorgams and profile plots.
+This can be done adding one line for each new location in the file tslist.
+As it is esplained in the header,
+Each record must provide: 
+  name: max 24 character length, no blank spaces within the name 
+  pfs: a prefix, to be used in output files (max 5 characters) 
+  LAT: latitude (total 7 characters) 
+  LON: longitude (total 8 characters) 
+ 
+NOTE: !!! be carefull not to get outside the  
+ start and the beginning of each variable 
+ Keep the same alignment as the default records 
+ Mababane and Airport !!!!
+
+When you modify tslist file, adding or removing locations, the following
+forecast will contain the updated results
+

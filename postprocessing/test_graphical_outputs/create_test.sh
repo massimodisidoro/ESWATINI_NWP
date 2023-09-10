@@ -29,6 +29,7 @@ cp test.sh $working_dir
 cp $dir_post/*.py   $working_dir
 cp $dir_post/*.R   $working_dir
 cp *.TS  tslist *yaml*  test.sh $working_dir
+cp $dir_post/README_POSTPROCESSING $working_dir
 
 cd $working_dir
 ln -sf ../wrfout* .
