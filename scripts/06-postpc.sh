@@ -122,8 +122,5 @@ for domain in 02 01;do
     fi
    done
 
-  #transfer test on enea  machine
-  rclone mkdir enea://gporq3/minni/minniusers/disidoro/tmp/$folder -vv
-  rclone copy $fig_meteo_archive enea:/gporq3/minni/minniusers/disidoro/tmp/$folder --include-from=tmp.txt -vv
   rm tmp.txt
 done # cycle over both domains (5km and 1 km resolution)
