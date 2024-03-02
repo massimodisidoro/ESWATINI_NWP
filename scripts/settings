@@ -62,8 +62,11 @@ export gfs_res=0p50
   # profiled must be automatically produced in output
 # REMOTE MACHINE AND FOLDER WHERE GRAPHICS IS UPLOADED
   # the remote machine name is that related to "rclone config" configuration
-  remote_machine=sive_windows_machine
-  remote_folder_path="C:/Users/Met/Desktop/ENEA"
+  ##PLEASE NOTE THAT, FOR THE TRANSFER TO WORK,
+  ## THE REMOTE MACHINA MUST HAVE INSTALLED AND ACTIVE OpenSSH CLIENT AND SERVER
+  #remote_machine=eneahpc
+  remote_machine=new_remote
+  remote_folder_path="C:/Users/sives/Desktop/ENEA"
   # remove old folders in the remote machine. 
   # remove folders older than remote_folder_age days
   # use an integer number indicating the days (e.g. 2= removes folder older than 2 days)
@@ -74,4 +77,4 @@ export gfs_res=0p50
   # number can be changed up to a value that allows maximum storage occupation
   # Note that the total storage space is around 145TB and one year
   # of forecasts (00UTC and 12UTC) occupies about 6TB
-  clear_older_days=365 
+  clear_older_days=365

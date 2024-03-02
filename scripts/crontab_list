@@ -1,0 +1,22 @@
+# 00UTC init forecast
+10 00  * * * /home/enwp/crontab_scripts/submit_clear_scratch.sh
+15 00  * * * /home/enwp/crontab_scripts/submit_clear_archive.sh
+55 05  * * * /home/enwp/crontab_scripts/01_submit_download_gfs.sh 
+25 06  * * * /home/enwp/crontab_scripts/02_submit_ungrib.sh
+28 06  * * * /home/enwp/crontab_scripts/03_submit_metgrid.sh
+32 06  * * * /home/enwp/crontab_scripts/04_submit_real.sh
+35 06  * * * /home/enwp/crontab_scripts/05_submit_wrf.sh
+35 07  * * * /home/enwp/crontab_scripts/06_submit_postpc.sh
+
+
+
+# 12UTC init forecast
+10 12  * * * /home/enwp/crontab_scripts/submit_clear_scratch.sh
+15 12  * * * /home/enwp/crontab_scripts/submit_clear_archive.sh
+55 17  * * * /home/enwp/crontab_scripts/01_submit_download_gfs.sh 
+25 18  * * * /home/enwp/crontab_scripts/02_submit_ungrib.sh
+28 18  * * * /home/enwp/crontab_scripts/03_submit_metgrid.sh
+32 18  * * * /home/enwp/crontab_scripts/04_submit_real.sh
+35 18  * * * /home/enwp/crontab_scripts/05_submit_wrf.sh
+35 19  * * * /home/enwp/crontab_scripts/06_submit_postpc.sh
+
