@@ -8,7 +8,8 @@ export python=/storage/forecast_system/libs/anaconda3/wrf-python/bin/python
 # settings for parallel processes: do not modify
 export omp_wps_threads=2 
 export omp_wrf_threads=1
-export nprocs_wrf=192 #192/omp_wrf_threads #48 one node
+#export nprocs_wrf=192 #192/omp_wrf_threads #48 one node , 4 nodes
+export nprocs_wrf=144 #192/omp_wrf_threads #48 one node, 3 nodes
 
 #once establishd the $root_dir, al other folders are automatically defined
 # we establish the forecast system is under /storage/forecast_system/ :
@@ -61,10 +62,11 @@ export gfs_res=0p50
   # to choose the geographcal points where meteograms and
   # profiled must be automatically produced in output
 # REMOTE MACHINE AND FOLDER WHERE GRAPHICS IS UPLOADED
+  export RCLONE_CONFIG=$dir_namelist/rclone.conf
+
   # the remote machine name is that related to "rclone config" configuration
   ##PLEASE NOTE THAT, FOR THE TRANSFER TO WORK,
   ## THE REMOTE MACHINA MUST HAVE INSTALLED AND ACTIVE OpenSSH CLIENT AND SERVER
-  #remote_machine=eneahpc
   remote_machine=new_remote
   remote_folder_path="C:/Users/sives/Desktop/ENEA"
   # remove old folders in the remote machine. 

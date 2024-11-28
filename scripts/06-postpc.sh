@@ -43,7 +43,7 @@ while [[ $count -le 90 ]];do
     sleep 10
     break
   fi
-  sleep 60
+  sleep 90
   count=$(( $count +1 ))
 done
   
