@@ -95,7 +95,6 @@ set -x
 
 export OMP_NUM_THREADS=$omp_wrf_threads
 mpirun -np $nprocs_wrf --hostfile $dir_tmp/hostfile $dir_exe/wrf.exe &> $dir_log/log_05-wrf_${date_forecast}.log
-#mpirun -np $nprocs_wrf $dir_exe/wrf.exe &> $dir_log/log_05-wrf_${date_forecast}.log
 cp namelist.input $dir_log/namelist.input_$date_forecast
 mkdir -p $dir_log/wrflog
 cp rsl* $dir_log/wrflog

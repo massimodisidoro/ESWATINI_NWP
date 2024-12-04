@@ -5,12 +5,6 @@
 export python=/storage/forecast_system/libs/anaconda3/wrf-python/bin/python
 
 
-# settings for parallel processes: do not modify
-export omp_wps_threads=2 
-export omp_wrf_threads=1
-#export nprocs_wrf=192 #192/omp_wrf_threads #48 one node , 4 nodes
-export nprocs_wrf=144 #192/omp_wrf_threads #48 one node, 3 nodes
-
 #once establishd the $root_dir, al other folders are automatically defined
 # we establish the forecast system is under /storage/forecast_system/ :
 export dir_root="/storage/forecast_system/"
@@ -32,8 +26,14 @@ export dir_wrf_static_data="$dir_root/wrf_static_data"
 export dir_wrf_lookup_tables="$dir_wrf_code/run"
 
 
-# dir_archive is the folder in which the outputs (model files and grapgics) are
-# stored
+# settings for parallel processes: do not modify
+export omp_wps_threads=2 
+export omp_wrf_threads=1
+#number of wrf parallel cores retrieved from hostfile file.
+export nprocs_wrf=`cat $dir_script/hostfile |wc -l`
+
+# dir_archive is the folder in which the outputs (model files and
+# grapgics) are stored
 export dir_archive="$dir_root/OUT_ARCHIVE"
 
 # 0.50 degree gfs data to be download for IC and BC for WRF
