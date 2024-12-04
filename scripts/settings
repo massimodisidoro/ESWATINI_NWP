@@ -62,7 +62,7 @@ export gfs_res=0p50
   # to choose the geographcal points where meteograms and
   # profiled must be automatically produced in output
 # REMOTE MACHINE AND FOLDER WHERE GRAPHICS IS UPLOADED
-  export RCLONE_CONFIG=$dir_namelist/rclone.conf
+  #export RCLONE_CONFIG=$dir_namelist/rclone.conf
 
   # the remote machine name is that related to "rclone config" configuration
   ##PLEASE NOTE THAT, FOR THE TRANSFER TO WORK,
